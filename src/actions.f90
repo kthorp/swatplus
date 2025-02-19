@@ -35,56 +35,62 @@
       integer, intent (in)  :: ob_cur      !none     |sequential number of individual objects
       integer, intent (in)  :: ob_num      !none     |sequential number for all objects
       integer, intent (in)  :: idtbl       !none     |
-      integer :: icom                      !none     |
-      integer :: iac                       !none     |counter
-      integer :: ial                       !none     |counter
+      integer :: icom = 0                  !none     |
+      integer :: iac = 0                   !none     |counter
+      integer :: ial = 0                   !none     |counter
       !integer :: jj                        !none     |counter
-      integer :: iburn                     !none     |burn type from fire data base
-      integer :: idtill                    !none     |tillage type
-      integer :: ifertop                   !         |surface application fraction from chem app data base
-      integer :: ifrt                      !         |fertilizer type from fert data base
-      integer :: ipestop                   !         |surface application fraction from chem app data base
-      integer :: ipst                      !         |pesticide type from pest data base
-      integer :: iharvop                   !         |harvest operation type
-      integer :: iihru                     !         |
-      integer :: ilu                       !         |landuse type 
-      integer :: j                         !none     |counter
-      integer :: iob
-      integer :: idp                       !         |
-      integer :: istr                      !         |
-      integer :: istr1                     !         |
-      integer :: iob_out
-      integer :: inhyd                     !         |
-      integer :: ihyd_in                   !         |
-      integer :: icon                      !         |
-      integer :: iplt_bsn
-      integer :: irrop                     !         |
-      integer :: igr
-      integer :: ireg                      !         |
-      integer :: ilum
-      integer :: isrc
-      integer :: isched
-      integer :: ipud, ipdl
-      integer :: ires,idb
-      integer :: imallo, idmd,irec
-      real :: hiad1                        !         |
-      real :: biomass                      !         |
-      real :: frt_kg
-      real :: harveff
-      real :: wur                          !         |
-      real :: frac                         !         |
-      real :: rto                          !         |
-      real :: rto1                         !         |
-      real :: pest_kg                      !kg/ha    |amount of pesticide applied 
+      integer :: iburn = 0                 !none     |burn type from fire data base
+      integer :: idtill = 0                !none     |tillage type
+      integer :: ifertop = 0               !         |surface application fraction from chem app data base
+      integer :: ifrt = 0                  !         |fertilizer type from fert data base
+      integer :: ipestop = 0               !         |surface application fraction from chem app data base
+      integer :: ipst = 0                  !         |pesticide type from pest data base
+      integer :: iharvop = 0               !         |harvest operation type
+      integer :: iihru = 0                 !         |
+      integer :: ilu = 0                   !         |landuse type 
+      integer :: j = 0                     !none     |counter
+      integer :: iob = 0
+      integer :: idp = 0                   !         |
+      integer :: istr = 0                  !         |
+      integer :: istr1 = 0                 !         |
+      integer :: iob_out = 0
+      integer :: inhyd = 0                 !         |
+      integer :: ihyd_in = 0               !         |
+      integer :: icon = 0                  !         |
+      integer :: iplt_bsn = 0
+      integer :: irrop = 0                 !         |
+      integer :: igr = 0
+      integer :: ireg = 0                  !         |
+      integer :: ilum = 0
+      integer :: isrc = 0
+      integer :: isched = 0
+      integer :: ipud = 0
+      integer :: ipdl = 0
+      integer :: ires = 0
+      integer :: idb = 0
+      integer :: imallo = 0
+      integer :: idmd = 0
+      integer :: irec = 0
+      integer :: iplt = 0
+      integer :: num_plts_cur = 0
+      real :: hiad1 = 0.                   !         |
+      real :: biomass = 0.                 !         |
+      real :: frt_kg = 0.
+      real :: harveff = 0.
+      real :: wur = 0.                     !         |
+      real :: frac = 0.                    !         |
+      real :: rto = 0.                     !         |
+      real :: rto1 = 0.                    !         |
+      real :: pest_kg = 0.                 !kg/ha    |amount of pesticide applied 
       real :: chg_par                      !variable |new parameter value
-      real :: yield 
+      real :: yield = 0.
       real :: sumpst = 0.
-      real :: rock
-      real :: p_factor
-      real :: cn_prev
-      real :: stor_m3
-      character(len=1) :: action           !         |
-      character(len=25) :: lu_prev         !         |
+      real :: rock = 0.
+      real :: p_factor = 0.
+      real :: cn_prev = 0.
+      real :: stor_m3 = 0.
+      character(len=1) :: action = ""      !         |
+      character(len=40) :: lu_prev = ""    !         |
 
       do iac = 1, d_tbl%acts
         action = "n"
@@ -122,7 +128,7 @@
               hru(j)%irr_hmax = d_tbl%act(iac)%const !mm target ponding depth
               hru(j)%irr_hmin = d_tbl%act(iac)%const2 !mm threshold ponding depth for irrigation
               
-              wet_ob(j)%depth = wet_ob(j)%depth + irrig(j)%applied / 1000. !mm irrigation by wro already happend for today Jaehak 2023
+              wet_ob(j)%depth = wet_ob(j)%depth + irrig(j)%applied / 1000. !mm irrigation by wro already happened for today Jaehak 2023
 
               if (wet_ob(j)%depth*1000.<hru(j)%irr_hmin) then
                 irrig(j)%demand = max(0.,d_tbl%act(iac)%const-wet_ob(j)%depth*1000.) * hru(j)%area_ha * 10.       ! m3 = mm * ha * 10.
@@ -143,14 +149,14 @@
                 !set organics and constituents from irr.ops ! irrig(j)%water =  cs_irr(j) = 
                 if (pco%mgtout == "y") then
                   write (2612, *) j, time%yrc, time%mo, time%day_mo, "        ", "IRRIGATE", phubase(j),  &
-                      pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, rsd1(j)%tot(ipl)%m, &
+                      pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m, &
                       sol_sumno3(j), sol_sumsolp(j), irrig(j)%applied
                 end if
               else
                 !! set demand for irrigation from channel, reservoir or aquifer
                 if (pco%mgtout == "y") then
                   write (2612, *) j, time%yrc, time%mo, time%day_mo, "        ", "IRRIG_DMD", phubase(j), &
-                      pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, rsd1(j)%tot(ipl)%m, &
+                      pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m, &
                       sol_sumno3(j), sol_sumsolp(j), irrop_db(irrop)%amt_mm
                 end if
               end if
@@ -238,7 +244,7 @@
                   
             if (pco%mgtout == "y") then
               write (2612, *) j, time%yrc, time%mo, time%day_mo, "        ", "IRRIGATE", phubase(j),  &
-                  pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, rsd1(j)%tot(ipl)%m, &
+                  pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m, &
                   sol_sumno3(j), sol_sumsolp(j), irrig(j)%demand
             end if
             
@@ -264,7 +270,7 @@
                 if (pco%mgtout == "y") then
                   write (2612,*) j, time%yrc, time%mo, time%day_mo, mgt%op_char, " FERT-WET", &
                     phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, pl_mass(j)%tot(ipl)%m,           &
-                    rsd1(j)%tot_com%m, sol_sumno3(j), sol_sumsolp(j), frt_kg, fertno3, fertnh3,         &
+                    soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), frt_kg, fertno3, fertnh3,         &
                     fertorgn, fertsolp, fertorgp
                 endif
               else
@@ -272,7 +278,7 @@
                 if (pco%mgtout == "y") then
                   write (2612,*) j, time%yrc, time%mo, time%day_mo, mgt%op_char, "    FERT ", &
                     phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, pl_mass(j)%tot(ipl)%m,           &
-                    rsd1(j)%tot_com%m, sol_sumno3(j), sol_sumsolp(j), frt_kg, fertno3, fertnh3,         &
+                    soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), frt_kg, fertno3, fertnh3,         &
                     fertorgn, fertsolp, fertorgp
                 endif
               endif
@@ -300,7 +306,7 @@
               if (pco%mgtout == "y") then
                 write (2612, *) j, time%yrc, time%mo, time%day_mo, tilldb(idtill)%tillnm, "    TILLAGE",    &
                     phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, pl_mass(j)%tot(ipl)%m,        &
-                    rsd1(j)%tot(ipl)%m, sol_sumno3(j), sol_sumsolp(j), tilldb(idtill)%effmix
+                    soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), tilldb(idtill)%effmix
               end if
               pcom(j)%dtbl(idtbl)%num_actions(iac) = pcom(j)%dtbl(idtbl)%num_actions(iac) + 1
               pcom(j)%dtbl(idtbl)%days_act(iac) = 1     !reset days since this action
@@ -339,7 +345,7 @@
                     if (pco%mgtout == "y") then
                     write (2612, *) j, time%yrc, time%mo, time%day_mo, pldb(idp)%plantnm, "    PLANT",   &
                       phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(ihru)%sw,                     &
-                      pl_mass(j)%tot(ipl)%m, rsd1(j)%tot_com%m, sol_sumno3(j),                  &
+                      pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m, sol_sumno3(j),                  &
                       sol_sumsolp(j), pcom(j)%plg(ipl)%lai, pcom(j)%plcur(ipl)%lai_pot
                     end if
                   else
@@ -347,7 +353,7 @@
                     if (pco%mgtout ==  "y") then
                       write (2612, *) j, time%yrc, time%mo, time%day_mo, pldb(idp)%plantnm,         &
                         "    PLANT_ALREADY_GROWING", phubase(j), pcom(j)%plcur(ipl)%phuacc,       &
-                        soil(j)%sw, pl_mass(j)%tot(ipl)%m, rsd1(j)%tot_com%m, sol_sumno3(j),      &
+                        soil(j)%sw, pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m, sol_sumno3(j),      &
                         sol_sumsolp(j),pcom(j)%plg(ipl)%lai, pcom(j)%plcur(ipl)%lai_pot
                     end if
                   end if
@@ -394,12 +400,13 @@
                   harveff = d_tbl%act(iac)%const
                   call mgt_harvresidue (j, harveff)
                 case ("tree")
+                  call mgt_harvbiomass (j, ipl, iharvop)
                 case ("tuber")
                   call mgt_harvtuber (j, ipl, iharvop)
                 case ("peanuts")
                   call mgt_harvtuber (j, ipl, iharvop)
                 case ("stripper")
-                  call mgt_harvgrain (j, ipl, iharvop)
+                  call mgt_harvbiomass (j, ipl, iharvop)
                 case ("picker")
                   call mgt_harvgrain (j, ipl, iharvop)
                 end select
@@ -430,7 +437,7 @@
                   idp = pcom(j)%plcur(ipl)%idplt
                   if (pco%mgtout == "y") then
                     write (2612, *) j, time%yrc, time%mo, time%day_mo,  pldb(idp)%plantnm, "    HARVEST",      &
-                        phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, biomass, rsd1(j)%tot(ipl)%m, &
+                        phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, biomass, soil1(j)%rsd(1)%m, &
                         sol_sumno3(j), sol_sumsolp(j), pl_yield%m, pcom(j)%plstr(ipl)%sum_n, &
                         pcom(j)%plstr(ipl)%sum_p, pcom(j)%plstr(ipl)%sum_tmp, pcom(j)%plstr(ipl)%sum_w, &
                         pcom(j)%plstr(ipl)%sum_a
@@ -459,7 +466,7 @@
                   idp = pcom(j)%plcur(ipl)%idplt
                   if (pco%mgtout == "y") then
                     write (2612, *) j, time%yrc, time%mo, time%day_mo,  pldb(idp)%plantnm, "         KILL",     &
-                        phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, biomass, rsd1(j)%tot(ipl)%m,  &
+                        phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, biomass, soil1(j)%rsd(1)%m,  &
                         sol_sumno3(j), sol_sumsolp(j), yield, pcom(j)%plstr(ipl)%sum_n,                  &
                         pcom(j)%plstr(ipl)%sum_p, pcom(j)%plstr(ipl)%sum_tmp, pcom(j)%plstr(ipl)%sum_w,  &
                         pcom(j)%plstr(ipl)%sum_a
@@ -547,7 +554,7 @@
                   idp = pcom(j)%plcur(ipl)%idplt
                   if (pco%mgtout == "y") then
                     write (2612, *) j, time%yrc, time%mo, time%day_mo,  pldb(idp)%plantnm, "    HARV/KILL",        &
-                        phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, biomass, rsd1(j)%tot(ipl)%m,     &
+                        phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, biomass, soil1(j)%rsd(1)%m,     &
                         sol_sumno3(j), sol_sumsolp(j), pl_yield%m, pcom(j)%plstr(ipl)%sum_n,   &
                         pcom(j)%plstr(ipl)%sum_p, pcom(j)%plstr(ipl)%sum_tmp, pcom(j)%plstr(ipl)%sum_w,     &
                         pcom(j)%plstr(ipl)%sum_a
@@ -582,7 +589,7 @@
               if (pco%mgtout == "y") then
                 write (2612, *) j, time%yrc, time%mo, time%day_mo, d_tbl%act(iac)%option, "    PEST ",        &
                  phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m,           &
-                 rsd1(j)%tot(ipl)%m, sol_sumno3(j), sol_sumsolp(j), pest_kg
+                 soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), pest_kg
               endif
               pcom(j)%dtbl(idtbl)%num_actions(iac) = pcom(j)%dtbl(idtbl)%num_actions(iac) + 1
               !dtbl_lum(idtbl)%hru_lu_cur = dtbl_lum(idtbl)%hru_lu_cur + 1
@@ -600,7 +607,7 @@
               !if (pco%mgtout == "y") then
               !  write (2612, *) j, time%yrc, time%mo, time%day_mo, "         ", "    GRAZE",         &
               !    phubase(j), pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m,        &
-              !    rsd1(j)%tot(ipl)%m, sol_sumno3(j), sol_sumsolp(j), grazeop_db(igr)%eat, grazeop_db(igr)%manure
+              !    soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), grazeop_db(igr)%eat, grazeop_db(igr)%manure
               !end if
               pcom(j)%dtbl(idtbl)%num_actions(iac) = pcom(j)%dtbl(idtbl)%num_actions(iac) + 1
 
@@ -666,7 +673,7 @@
               if (pco%mgtout == "y") then
                 write (2612, *) j, time%yrc, time%mo, time%day_mo, tilldb(idtill)%tillnm, "  DRAIN_CONTROL",    &
                     phubase(j), pcom(j)%plcur(1)%phuacc, soil(j)%sw, pl_mass(j)%tot(1)%m,        &
-                    rsd1(j)%tot(1)%m, sol_sumno3(j), sol_sumsolp(j), hru(j)%lumv%sdr_dep
+                    soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), hru(j)%lumv%sdr_dep
               end if
             end if
                                    
@@ -748,7 +755,7 @@
                 
             end select
             
-            ! set inflow hydrograph fraction of recieving objects - used for dtbl flow fractions
+            ! set inflow hydrograph fraction of receiving objects - used for dtbl flow fractions
             ! set first object hyd fractin as defined in decision table
             inhyd = dtbl_flo(idtbl)%act(iac)%ob_num
             ihyd_in = ob(ob_num)%rcvob_inhyd(inhyd)
@@ -774,7 +781,7 @@
               else
                 frac = d_tbl%act(iac)%const / hwb_d(j)%qtile
               end if
-              ! set inflow hydrograph fraction of recieving objects - used for dtbl flow fractions
+              ! set inflow hydrograph fraction of receiving objects - used for dtbl flow fractions
               ! set first object hyd fractin as defined in decision table
               inhyd = dtbl_flo(idtbl)%act(iac)%ob_num
               ihyd_in = ob(ob_num)%rcvob_inhyd(inhyd)
@@ -882,7 +889,10 @@
           case ("lu_change")
             j = d_tbl%act(iac)%ob_num
             if (j == 0) j = ob_cur
+            !if (d_tbl%lu_chg_mx(iac) <= Int(d_tbl%act(iac)%const2)) then
+            d_tbl%lu_chg_mx(iac) = d_tbl%lu_chg_mx(iac) + 1
             ilu = d_tbl%act_typ(iac)
+            hru(j)%land_use_mgt = ilu
             hru(j)%dbs%land_use_mgt = ilu
             lu_prev = hru(j)%land_use_mgt_c
             hru(j)%land_use_mgt_c = d_tbl%act(iac)%file_pointer
@@ -898,6 +908,27 @@
             write (3612,*) j, time%yrc, time%mo, time%day_mo,  "    LU_CHANGE ",        &
                     lu_prev, hru(j)%land_use_mgt_c, "   0   0"
                             
+              !! add new plants in simulation for yield output
+              do ipl = 1, pcom(j)%npl
+                if (basin_plants == 0) then
+                  plts_bsn(1) = pcom(j)%pl(ipl)
+                  basin_plants = 1
+                else
+                  num_plts_cur = basin_plants
+                  do iplt = 1, num_plts_cur
+                    if (pcom(j)%pl(ipl) == plts_bsn(iplt)) exit
+                    if (iplt == basin_plants) then
+                      plts_bsn(iplt+1) = pcom(j)%pl(ipl)
+                      bsn_crop_yld(iplt+1) = bsn_crop_yld_z
+                      bsn_crop_yld_aa(iplt+1) = bsn_crop_yld_z
+                      basin_plants = basin_plants + 1
+                      pcom(j)%plcur(ipl)%bsn_num = basin_plants
+                    end if
+                  end do
+                end if
+              end do
+              !pcom(j)%dtbl(idtbl)%num_actions(iac) = pcom(j)%dtbl(idtbl)%num_actions(iac) + 1
+            !end if
           !land use change - contouring
           case ("p_factor")
             j = d_tbl%act(iac)%ob_num
@@ -975,7 +1006,7 @@
               end if
             end do
             
-            !! set parameters for structural land use/managment
+            !! set parameters for structural land use/management
             if (d_tbl%act(iac)%file_pointer /= "null") then
               call structure_set_parms("tiledrain       ", istr1, j)
             end if
@@ -996,7 +1027,7 @@
               end if
             end do
                   
-            !! set parameters for structural land use/managment
+            !! set parameters for structural land use/management
             if (d_tbl%act(iac)%file_pointer /= "null") then
               call structure_set_parms("septic          ", istr1, j)
             end if
@@ -1015,7 +1046,7 @@
               end if
             end do
             
-            !! set parameters for structural land use/managment
+            !! set parameters for structural land use/management
             if (d_tbl%act(iac)%file_pointer /= "null") then
               call structure_set_parms("fstrip         ", istr1, j)
             end if
@@ -1029,18 +1060,26 @@
               
             do istr = 1, db_mx%grassop_db
               if (d_tbl%act(iac)%file_pointer == grwaterway_db(istr)%name) then
-                istr1 = istr
+                !istr1 = istr
+                hru(j)%lumv%grwat_i = 1
                 exit
               end if
             end do
             
-            !! set parameters for structural land use/managment
+            !! set parameters for structural land use/management
             if (d_tbl%act(iac)%file_pointer /= "null") then
               call structure_set_parms("grassww         ", istr1, j)
             end if
             write (3612,*) j, time%yrc, time%mo, time%day_mo,  " GRASSWW_INSTALL ",       &
               sdr(istr)%name, sdr(istr1)%name, "   0   0"
                                                          
+          !install grass waterways
+          case ("grassww_uninstall")
+            j = d_tbl%act(iac)%ob_num
+            if (j == 0) j = ob_cur
+            hru(j)%lumv%grwat_i = 0
+            write (3612,*) j, time%yrc, time%mo, time%day_mo,  " GRASSWW_UNINSTALL ",       &
+              sdr(istr)%name, sdr(istr1)%name, "   0   0"
           !user defined bmp reductions
           case ("user_def_bmp")
             j = d_tbl%act(iac)%ob_num
@@ -1053,7 +1092,7 @@
               end if
             end do
             
-            !! set parameters for structural land use/managment
+            !! set parameters for structural land use/management
             if (d_tbl%act(iac)%file_pointer /= "null") then
               call structure_set_parms("user_def        ", istr1, j)
             end if
@@ -1080,7 +1119,7 @@
                         
               if (pco%mgtout == "y") then
                 write (2612, *) j, time%yrc, time%mo, time%day_mo, "        ", "    BURN", phubase(j),    &
-                    pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, rsd1(j)%tot(ipl)%m,   &
+                    pcom(j)%plcur(ipl)%phuacc, soil(j)%sw,pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m,   &
                     sol_sumno3(j), sol_sumsolp(j)
               end if
               pcom(j)%dtbl(idtbl)%num_actions(iac) = pcom(j)%dtbl(idtbl)%num_actions(iac) + 1
@@ -1100,7 +1139,7 @@
             if (pco%mgtout == "y") then
               ipl = 1
               write (2612, *) j, time%yrc, time%mo, time%day_mo, "        ", "    CNUP", phubase(j),    &
-                pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, pl_mass(j)%tot(ipl)%m, rsd1(j)%tot(ipl)%m,       &
+                pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, pl_mass(j)%tot(ipl)%m, soil1(j)%rsd(1)%m,       &
                 sol_sumno3(j), sol_sumsolp(j), cn_prev, cn2(j)
             end if
             

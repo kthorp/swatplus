@@ -31,12 +31,23 @@
       
       implicit none
 
-      integer :: j,jj,gw_soil_flag
-      integer :: ics
-      integer :: sol_index
-      real :: cocs,cosurfcs,perccslyr(3),ssfcslyr,vcs
-      real :: hru_area_m2,water_volume,cs_mass_kg
-      real :: ro_mass,sro,vv,ww
+      integer :: j = 0
+      integer :: jj = 0
+      integer :: gw_soil_flag = 0
+      integer :: ics = 0
+      integer :: sol_index = 0
+      real :: cocs = 0.
+      real :: cosurfcs = 0.
+      real :: perccslyr(3) = 0.
+      real :: ssfcslyr = 0.
+      real :: vcs = 0.
+      real :: hru_area_m2 = 0.
+      real :: water_volume = 0.
+      real :: cs_mass_kg = 0.
+      real :: ro_mass = 0.
+      real :: sro = 0.
+      real :: vv = 0.
+      real :: ww = 0.
 
 
       j = 0
@@ -55,7 +66,7 @@
             !store for mass balance output  
             gwupcs(j,ics) = gwupcs(j,ics) + hru_soil(j,jj,sol_index) !kg/ha
           enddo
-		enddo
+                enddo
       endif
       
       perccslyr = 0.
@@ -89,13 +100,13 @@
           cocs = Max(vcs / vv, 0.)
 
           !! calculate constituent mass in surface runoff
-          cosurfcs = bsn_prm%nperco * cocs
+          cosurfcs = hru(j)%nut%nperco * cocs
           if (jj == 1) then
             !surface runoff
             ro_mass = surfq(j) * cosurfcs
             ro_mass = Min(ro_mass, cs_soil(j)%ly(jj)%cs(ics))
             cs_soil(j)%ly(jj)%cs(ics) = cs_soil(j)%ly(jj)%cs(ics) - ro_mass
-				surqcs(j,ics) = ro_mass
+                surqcs(j,ics) = ro_mass
           endif
           
           !Daniel 1/2012    
@@ -144,7 +155,7 @@
           hru_area_m2 = hru(j)%area_ha * 10000. !ha --> m2
           water_volume = (soil(j)%phys(jj)%st/1000.) * hru_area_m2
           if(cs_soil(j)%ly(jj)%cs(ics).lt.0) then
-			  cs_soil(j)%ly(jj)%cs(ics) = 0.
+              cs_soil(j)%ly(jj)%cs(ics) = 0.
           endif
           cs_mass_kg = cs_soil(j)%ly(jj)%cs(ics) * hru(j)%area_ha !kg
           !calculate concentration in mg/L

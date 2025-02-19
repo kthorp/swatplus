@@ -6,15 +6,15 @@
         
       implicit none
        
-      character (len=80) :: titldum   !           |title of file
-      character (len=80) :: header    !           |header of file
-      integer :: eof                  !           |end of file
-      integer :: imax                 !none       |determine max number for array (imax) and total number in file
+      character (len=80) :: titldum = ""!           |title of file
+      character (len=80) :: header = "" !           |header of file
+      integer :: eof = 0              !           |end of file
+      integer :: imax = 0             !none       |determine max number for array (imax) and total number in file
       logical :: i_exist              !none       |check to determine if file exists
-      integer :: i                    !none       |counter
-      integer :: ii                   !none       !counter
-      integer :: k                    !           |
-      integer :: iunit  
+      integer :: i = 0                !none       |counter
+      integer :: ii = 0               !none       !counter
+      integer :: k = 0                !           |
+      integer :: iunit = 0
       
       mobj_out = 0
       imax = 0      
@@ -86,15 +86,15 @@
                ob_out(i)%hydno = 4
             case ("til")   !tile
                ob_out(i)%hydno = 5 
-            case ("sol")  !soil moisture by layer 
+            case ("sol_water")  !soil moisture by layer 
                ob_out(i)%hydno = 6 
-            case ("soln")  !soil n and p by layer 
+            case ("solnut_ly")  !soil n and p by layer 
                ob_out(i)%hydno = 7
-            case ("solpn")  !soil n and p for profile 
+            case ("solnut_pr")  !soil n and p for profile 
                ob_out(i)%hydno = 8
-            case ("plt")  !plants status  
+            case ("plant")  !plants status  
                ob_out(i)%hydno = 9
-            case ("ch_fp")  !channel and flood plain water balance  
+            case ("cha_fp")  !channel and flood plain water balance  
                ob_out(i)%hydno = 10
             end select
          iunit = ob_out(i)%unitno

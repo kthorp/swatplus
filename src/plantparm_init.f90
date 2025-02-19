@@ -6,11 +6,11 @@
       
       implicit none 
 
-      integer :: ic           !none        |counter
-      real :: c1              !            |
-      real :: b1              !            | 
-      real :: b2              !            |
-      real :: b3              !            |
+      integer :: ic = 0       !none        |counter
+      real :: c1 = 0.         !            |
+      real :: b1 = 0.         !            | 
+      real :: b2 = 0.         !            |
+      real :: b3 = 0.         !            |
       
       do ic = 1, db_mx%plantparm
         if (pldb(ic)%bm_dieoff <= 1.e-6) pldb(ic)%bm_dieoff = 1.00
@@ -22,11 +22,11 @@
         if (pldb(ic)%usle_c >= 1.0) pldb(ic)%usle_c = 1.0
         if (pldb(ic)%blai <= 0.0) pldb(ic)%blai = 0.0
         if (pldb(ic)%blai >= 10.0) pldb(ic)%blai = 10.0
-	    if (pldb(ic)%rsr1 <= 0.0) pldb(ic)%rsr1 = 0.4
-	    if (pldb(ic)%rsr2 <= 0.0) pldb(ic)%rsr2 = 0.2
+        if (pldb(ic)%rsr1 <= 0.0) pldb(ic)%rsr1 = 0.4
+        if (pldb(ic)%rsr2 <= 0.0) pldb(ic)%rsr2 = 0.2
         if (pldb(ic)%aeration <= 0.0) pldb(ic)%aeration = 0.2
-	    if (pldb(ic)%rsd_pctcov <= 0.0) pldb(ic)%rsd_pctcov = 0.4
-	    if (pldb(ic)%rsd_covfac <= 0.0) pldb(ic)%rsd_covfac = 0.04
+        if (pldb(ic)%rsd_pctcov <= 0.0) pldb(ic)%rsd_pctcov = 0.4
+        if (pldb(ic)%rsd_covfac <= 0.0) pldb(ic)%rsd_covfac = 0.04
         
         !! check if tuber, root to total biomass ratio = 0.7
         if (pldb(ic)%typ == "warm_annual_tuber" .or. pldb(ic)%typ == "cold_annual_tuber") then

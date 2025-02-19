@@ -10,9 +10,9 @@
       implicit none
       
       integer, intent (in) :: iaq        !             |
-      real :: const                      !             |constant used for rate, days, etc
-      integer :: iob                     !             |
-      integer :: isalt
+      real :: const = 0.                 !             |constant used for rate, days, etc
+      integer :: iob = 0                 !             |
+      integer :: isalt = 0
                          
 !!    ~ ~ ~ PURPOSE ~ ~ ~
 !!    this subroutine outputs salt mass loadings and concentrations in aquifers
@@ -44,7 +44,7 @@
                           asaltb_d(iaq)%salt(1)%diss
         if (pco%csvout == "y") then
           write (5061,'(*(G0.3,:","))') time%day, time%mo, time%day_mo, time%yrc, iaq, ob(iob)%gis_id, & 
-																		    (asaltb_d(iaq)%salt(isalt)%saltgw,isalt=1,cs_db%num_salts), &
+                                                                            (asaltb_d(iaq)%salt(isalt)%saltgw,isalt=1,cs_db%num_salts), &
                                         (asaltb_d(iaq)%salt(isalt)%rchrg,isalt=1,cs_db%num_salts), &
                                         (asaltb_d(iaq)%salt(isalt)%seep,isalt=1,cs_db%num_salts), &
                                         (asaltb_d(iaq)%salt(isalt)%irr,isalt=1,cs_db%num_salts), &

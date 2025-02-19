@@ -12,13 +12,13 @@
       implicit none 
 
       integer, intent (in) :: imallo     !water allocation object number
-      integer :: idmd                       !water demand object number
-      integer :: isrc                       !source object number
-      integer :: j                          !hru number
-      integer :: id                         !decision table number
-      integer :: ifrt                       !number in fertilizer.frt
-      integer :: ifertop                    !number in chem_app file
-      real :: frt_kg                        !m3     |demand
+      integer :: idmd = 0                   !water demand object number
+      integer :: isrc = 0                   !source object number
+      integer :: j = 0                      !hru number
+      integer :: id = 0                     !decision table number
+      integer :: ifrt = 0                   !number in fertilizer.frt
+      integer :: ifertop = 0                !number in chem_app file
+      real :: frt_kg = 0.                   !m3     |demand
 
       !! zero demand, withdrawal, and unmet for entire allocation object
       mallo(imallo)%tot = malloz
@@ -64,7 +64,7 @@
           if (pco%mgtout == "y") then
             write (2612, *) j, time%yrc, time%mo, time%day_mo, fertdb(ifrt)%fertnm, "    MANU",       &
                   phubase(j),pcom(j)%plcur(ipl)%phuacc, soil(j)%sw, pl_mass(j)%tot(ipl)%m,            &
-                  rsd1(j)%tot(ipl)%m, sol_sumno3(j), sol_sumsolp(j), frt_kg, fertno3, fertnh3,        &
+                  soil1(j)%rsd(1)%m, sol_sumno3(j), sol_sumsolp(j), frt_kg, fertno3, fertnh3,        &
                   fertorgn, fertsolp, fertorgp
           endif
         end if

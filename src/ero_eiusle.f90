@@ -23,7 +23,7 @@
 !!    ~ ~ ~ LOCAL DEFINITIONS ~ ~ ~
 !!    name        |units       |definition
 !!    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-!!    xa          |none        |fraction of daily rainfall occuring during
+!!    xa          |none        |fraction of daily rainfall occurring during
 !!                             |half-hour of max intensity rain
 !!    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
@@ -39,11 +39,11 @@
       
       implicit none
 
-      integer :: j         !none        |HRU number
-      real :: xb           !none        |intermediate calculation
-      real ::pkrf          !none        |intermediate calculation
-      real ::pkrf30        !mm/hr       |maximum 30-min. storm intensity
-      integer :: iob       !            |
+      integer :: j = 0     !none        |HRU number
+      real :: xb = 0.      !none        |intermediate calculation
+      real :: pkrf = 0.    !none        |intermediate calculation
+      real :: pkrf30 = 0.  !mm/hr       |maximum 30-min. storm intensity
+      integer :: iob = 0   !            |
      
 
       j = ihru

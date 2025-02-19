@@ -66,18 +66,18 @@
       
       implicit none 
       
-      integer :: j              !none               |HRU number
-      integer :: idp            !                   |
-      real :: f                 !none               |fraction of plant's maximum lai corresponding to a given fraction of phu (annual)
-      real :: f_p               !none               |fraction of plant's maximum lai corresponding to a given fraction of phu (perennial)
-      real :: ff                !                   |
-      real :: deltalai          !                   |
-      real :: laimax            !none               |maximum leaf area index
-      real :: lai_exp           !                   |
-      real :: rto_lin           !none               |ratio of current years of growth:years to maturity of perennial
-      real :: rto               !none               |ratio of current years of growth:years to maturity of perennial
-      real :: sumlaiht          !                   |
-      integer :: jpl            !none               |counter
+      integer :: j = 0          !none               |HRU number
+      integer :: idp = 0        !                   |
+      real :: f = 0.            !none               |fraction of plant's maximum lai corresponding to a given fraction of phu (annual)
+      real :: f_p = 0.          !none               |fraction of plant's maximum lai corresponding to a given fraction of phu (perennial)
+      real :: ff = 0.           !                   |
+      real :: deltalai = 0.     !                   |
+      real :: laimax = 0.       !none               |maximum leaf area index
+      real :: lai_exp = 0.      !                   |
+      real :: rto_lin = 0.      !none               |ratio of current years of growth:years to maturity of perennial
+      real :: rto = 0.          !none               |ratio of current years of growth:years to maturity of perennial
+      real :: sumlaiht = 0.     !                   |
+      integer :: jpl = 0        !none               |counter
       
       j = ihru
       idp = pcom(j)%plcur(ipl)%idplt
@@ -88,8 +88,10 @@
           ff = f - pcom(j)%plg(ipl)%laimxfr
           pcom(j)%plg(ipl)%laimxfr = f
           
+              
           f_p = pcom(j)%plcur(ipl)%phuacc_p / (pcom(j)%plcur(ipl)%phuacc_p +            &
               Exp(plcp(idp)%leaf1 - plcp(idp)%leaf2 * pcom(j)%plcur(ipl)%phuacc_p))
+
           !pcom(j)%plg(ipl)%laimxfr_p = amin1 (f_p, pcom(j)%plg(ipl)%laimxfr_p)
           !ff_p = f_p - pcom(j)%plg(ipl)%laimxfr_p
           !pcom(j)%plg(ipl)%laimxfr = f_p

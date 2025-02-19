@@ -11,55 +11,57 @@
       
       implicit none      
 
-      real :: kh
-      integer :: idb, idb1              !             |
-      integer :: i                      !none         |counter  
-      integer :: iob, ichdat
-      integer :: ich_ini                !none      |counter
-      integer :: iom_ini                !none      |counter
-      integer :: ipest_ini              !none      |counter
-      integer :: ipest_db               !none      |counter
-      integer :: ipath_ini              !none      |counter
-      integer :: isalt_ini							!none      |counter
-      integer :: ics_ini                !none      |counter
-      integer :: ipest                  !none      |counter
-      integer :: ipath                  !none      |counter
-      integer :: idat
-      integer :: i_dep                  !none      |counter
-      integer :: icha
-      integer :: isalt
-      integer :: ics
+      real :: kh = 0.
+      integer :: idb = 0                !             |
+      integer :: idb1 = 0               !             |
+      integer :: i = 0                  !none         |counter  
+      integer :: iob = 0
+      integer :: ichdat = 0
+      integer :: ich_ini = 0            !none      |counter
+      integer :: iom_ini = 0            !none      |counter
+      integer :: ipest_ini = 0          !none      |counter
+      integer :: ipest_db = 0           !none      |counter
+      integer :: ipath_ini = 0          !none      |counter
+      integer :: isalt_ini = 0   !none      |counter
+      integer :: ics_ini = 0            !none      |counter
+      integer :: ipest = 0              !none      |counter
+      integer :: ipath = 0              !none      |counter
+      integer :: idat = 0
+      integer :: i_dep = 0              !none      |counter
+      integer :: icha = 0
+      integer :: isalt = 0
+      integer :: ics = 0
       
-      real :: aa                      !none         |area/area=1 (used to calculate velocity with
+      real :: aa = 0.                 !none         |area/area=1 (used to calculate velocity with
                                       !             |Manning"s equation)
-      real :: a                       !m^2          |cross-sectional area of channel
-      real :: b                       !m            |bottom width of channel
-      real :: d                       !m            |depth of flow
-      real :: p                       !m            |wetting perimeter
-      real :: chside                  !none         |change in horizontal distance per unit
+      real :: a = 0.                  !m^2          |cross-sectional area of channel
+      real :: b = 0.                  !m            |bottom width of channel
+      real :: d = 0.                  !m            |depth of flow
+      real :: p = 0.                  !m            |wetting perimeter
+      real :: chside = 0.             !none         |change in horizontal distance per unit
                                       !             |change in vertical distance on channel side
                                       !             |slopes; always set to 2 (slope=1/2)
-      real :: fps                     !none         |change in horizontal distance per unit
+      real :: fps = 0.                !none         |change in horizontal distance per unit
                                       !             |change in vertical distance on floodplain side
                                       !             |slopes; always set to 4 (slope=1/4)
       integer :: max                  !             |
-      real :: rh                      !m            |hydraulic radius
+      real :: rh = 0.                 !m            |hydraulic radius
       real :: qman                    !m^3/s or m/s |flow rate or flow velocity
-      real :: bedvol                  !m^3          |volume of river bed sediment
+      real :: bedvol = 0.             !m^3          |volume of river bed sediment
       
-      real :: dep                     !             |
-      real :: vel                     !             |
-      real :: flow_dep
-      real :: celerity
-      real :: msk1         !units             |description 
-      real :: msk2         !units             |description 
-      real :: detmax       !units             |description 
-      real :: xkm          !hr                |storage time constant for the reach
-      real :: det          !hr                |time step
-      real :: denom        !none              |variable to hold intermediate calculation
-      real :: rto          !none              |ratio of channel volume to total volume
-      real :: rto1         !none              |ratio of flood plain volume to total volume
-      real :: sumc         !none              |sum of Muskingum coefficients
+      real :: dep = 0.                !             |
+      real :: vel = 0.                !             |
+      real :: flow_dep = 0.
+      real :: celerity = 0.
+      real :: msk1 = 0.    !units             |description 
+      real :: msk2 = 0.    !units             |description 
+      real :: detmax = 0.  !units             |description 
+      real :: xkm = 0.     !hr                |storage time constant for the reach
+      real :: det = 0.     !hr                |time step
+      real :: denom = 0.   !none              |variable to hold intermediate calculation
+      real :: rto = 0.     !none              |ratio of channel volume to total volume
+      real :: rto1 = 0.    !none              |ratio of flood plain volume to total volume
+      real :: sumc = 0.    !none              |sum of Muskingum coefficients
       
       do i = 1, sp_ob%chandeg
         icmd = sp_ob1%chandeg + i - 1
@@ -77,12 +79,11 @@
         sd_ch(i)%chn = sd_chd(idb)%chn
         if (sd_ch(i)%chn < .05) sd_ch(i)%chn = .05   !***jga
         sd_ch(i)%chk = sd_chd(idb)%chk      
-        sd_ch(i)%cherod = sd_chd(idb)%cherod
+        sd_ch(i)%bank_exp = sd_chd(idb)%bank_exp
         sd_ch(i)%cov = sd_chd(idb)%cov
         sd_ch(i)%sinu = sd_chd(idb)%sinu
         if (sd_ch(i)%sinu < 1.05) sd_ch(i)%sinu = 1.05
-        sd_ch(i)%chseq = sd_chd(idb)%chseq
-        if (sd_ch(i)%chseq < 1.e-6) sd_ch(i)%chseq = 0.5
+        sd_ch(i)%vcr_coef = sd_chd(idb)%vcr_coef
         sd_ch(i)%d50 = sd_chd(idb)%d50
         sd_ch(i)%ch_clay = sd_chd(idb)%ch_clay
         sd_ch(i)%carbon = sd_chd(idb)%carbon
@@ -109,7 +110,7 @@
         sd_ch(i)%n_dep_enr = sd_chd1(idb1)%n_dep_enr
         sd_ch(i)%p_dep_enr = sd_chd1(idb1)%p_dep_enr
         sd_ch(i)%arc_len_fr = sd_chd1(idb1)%arc_len_fr
-        sd_ch(i)%part_size = sd_chd1(idb1)%part_size
+        sd_ch(i)%bed_exp = sd_chd1(idb1)%bed_exp
         sd_ch(i)%wash_bed_fr = sd_chd1(idb1)%wash_bed_fr
           
         !! compute headcut parameters
@@ -163,8 +164,8 @@
       end do
         
       !! Compute storage time constant for reach (msk_co1 + msk_co2 = 1.)
-	  msk1 = bsn_prm%msk_co1 / (bsn_prm%msk_co1 + bsn_prm%msk_co2)
-	  msk2 = bsn_prm%msk_co2 / (bsn_prm%msk_co1 + bsn_prm%msk_co2)
+      msk1 = bsn_prm%msk_co1 / (bsn_prm%msk_co1 + bsn_prm%msk_co2)
+      msk2 = bsn_prm%msk_co2 / (bsn_prm%msk_co1 + bsn_prm%msk_co2)
       xkm = sd_ch(i)%stor_dis_bf * msk1 + sd_ch(i)%stor_dis_01bf * msk2
       
       !! Muskingum numerical stability -Jaehak Jeong, 2011
@@ -181,7 +182,7 @@
       end if
       sd_ch(i)%msk%nsteps = time%step * sd_ch(i)%msk%substeps
               
-        !! intial inflow-outflow
+        !! initial inflow-outflow
         if (sd_ch(i)%msk%nsteps > 0) then
           sd_ch(i)%in1_vol = rcurv%flo_rate / (86400. / sd_ch(i)%msk%nsteps)
           sd_ch(i)%out1_vol = rcurv%flo_rate / (86400. / sd_ch(i)%msk%nsteps)
@@ -212,7 +213,7 @@
           iom_ini = sd_init(ich_ini)%org_min
           tot_stor(ich) = om_init_water(iom_ini)
                     
-          !! intialize rating curves - inflow and outflow at current time step
+          !! initialize rating curves - inflow and outflow at current time step
           flow_dep = om_init_water(iom_ini)%flo * sd_ch(ich)%chd
           icha = ich
           call rcurv_interp_dep (icha, flow_dep)
@@ -303,7 +304,7 @@
             ch_water(ich)%cs(ics) = (cs_cha_ini(ics_ini)%conc(ics)/1000.) * tot_stor(ich)%flo !kg
           enddo
         enddo
-			endif
+            endif
       
       return
       end subroutine sd_hydsed_init

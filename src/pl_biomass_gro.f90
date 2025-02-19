@@ -15,15 +15,15 @@
       
       implicit none 
       
-      integer :: j              !none               |HRU number
-      real :: ruedecl           !none               |decline in radiation use efficiency for the
+      integer :: j = 0          !none               |HRU number
+      real :: ruedecl = 0.      !none               |decline in radiation use efficiency for the
                                 !                   |plant
-      real :: beadj             !(kg/ha)/(MJ/m**2)  |radiation-use efficiency for a given CO2
+      real :: beadj = 0.        !(kg/ha)/(MJ/m**2)  |radiation-use efficiency for a given CO2
                                 !                   |concentration
-      real :: rto               !none               |ratio of current years of growth:years to maturity of perennial
-      integer :: idp            !                   |
-      integer :: iob            !                   |
-      integer :: iwgn
+      real :: rto = 0.          !none               |ratio of current years of growth:years to maturity of perennial
+      integer :: idp = 0        !                   |
+      integer :: iob = 0        !                   |
+      integer :: iwgn = 0
       !real :: ppet
 
       j = ihru
@@ -143,7 +143,7 @@
                 
           !! increase in plant c
           if (bsn_cc%cswat == 2) then
-            hpc_d(j)%npp_c = hpc_d(j)%npp_c + bioday * pcom(j)%plstr(ipl)%reg * 0.42
+            hpc_d(j)%npp_c = hpc_d(j)%npp_c + pl_mass_up%c
           end if
 
           !! sum plant stresses

@@ -9,8 +9,8 @@
       implicit none
       
       integer :: j             !none          |hru number
-      real :: const            !              |constant used for rate, days, etc
-      integer :: iob              !                |
+      real :: const = 0.       !              |constant used for rate, days, etc
+      integer :: iob = 0          !                |
       
       iob = sp_ob1%hru + j - 1
 
@@ -90,6 +90,6 @@
         
       return
         
-100   format (4i6,2i10,2x,a,63e15.4) 
+100   format (4i6,2i10,2x,a,64e15.4) 
        
       end subroutine wetland_output

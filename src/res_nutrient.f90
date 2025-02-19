@@ -9,15 +9,15 @@
       implicit none      
       
       integer, intent (in) :: iob
-      real :: nitrok             !              |
-      real :: phosk              !              |
-      real :: tpco               !              |
-      real :: chlaco             !              |
-      integer :: iwst            !none          |weather station number
-      real :: nsetlr             !              |
-      real :: psetlr             !              |
-      real :: conc_n             !              |
-      real :: conc_p             !              |
+      real :: nitrok = 0.        !              |
+      real :: phosk = 0.         !              |
+      real :: tpco = 0.          !              |
+      real :: chlaco = 0.        !              |
+      integer :: iwst = 0        !none          |weather station number
+      real :: nsetlr = 0.        !              |
+      real :: psetlr = 0.        !              |
+      real :: conc_n = 0.        !              |
+      real :: conc_p = 0.        !              |
       real :: theta              !              |
       
 
@@ -51,14 +51,14 @@
       phosk = amin1 (phosk, 1.)
       phosk = max (phosk, 0.)
 
-      !! remove nutrients from reservoir by settling
+      !! remove nutrients from reservoir by settling - exclude soluble nutrients
       !! other part of equation 29.1.3 in SWAT manual
-      wbody%solp = wbody%solp * (1. - phosk)
+      wbody%solp = wbody%solp * (1. - phosk) * wbody_prm%solp_stl_fr
       wbody%sedp = wbody%sedp * (1. - phosk)
       wbody%orgn = wbody%orgn * (1. - nitrok)
-      wbody%no3 = wbody%no3 * (1. - nitrok)
-      wbody%nh3 = wbody%nh3 * (1. - nitrok)
-      wbody%no2 = wbody%no2 * (1. - nitrok)
+      wbody%no3 = wbody%no3 * (1. - nitrok) * wbody_prm%soln_stl_fr
+      wbody%nh3 = wbody%nh3 * (1. - nitrok) * wbody_prm%soln_stl_fr
+      wbody%no2 = wbody%no2 * (1. - nitrok) * wbody_prm%soln_stl_fr
 
       !! calculate chlorophyll-a and water clarity
       chlaco = 0.
@@ -89,13 +89,13 @@
       ht2%no2 = wbody%no2 * ht2%flo / (wbody%flo + ht2%flo)
       
       !! remove nutrients leaving reservoir
-      wbody%no3 = wbody%no3 - ht2%no3
-      wbody%orgn = wbody%orgn - ht2%orgn
-      wbody%sedp = wbody%sedp - ht2%sedp
-      wbody%solp = wbody%solp - ht2%solp
-      wbody%chla = wbody%chla - ht2%chla
-      wbody%nh3 = wbody%nh3 - ht2%nh3
-      wbody%no2 = wbody%no2 - ht2%no2
+      wbody%no3 = max(0.,wbody%no3 - ht2%no3) !No less than zero, Jaehak 2024
+      wbody%orgn = max(0.,wbody%orgn - ht2%orgn)
+      wbody%sedp = max(0.,wbody%sedp - ht2%sedp)
+      wbody%solp = max(0.,wbody%solp - ht2%solp)
+      wbody%chla = max(0.,wbody%chla - ht2%chla)
+      wbody%nh3 = max(0.,wbody%nh3 - ht2%nh3)
+      wbody%no2 = max(0.,wbody%no2 - ht2%no2)
 
       return
       end subroutine res_nutrient

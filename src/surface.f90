@@ -30,10 +30,10 @@
       
       implicit none
 
-      integer :: j                !none          |HRU number 
-      real :: ulu                 !              |
-      real :: hruirrday           !              |
-      integer :: irmmdt           !              |
+      integer :: j = 0            !none          |HRU number 
+      real :: ulu = 0.            !              |
+      real :: hruirrday = 0.      !              |
+      integer :: irmmdt = 0       !              |
 
       j = ihru
       ulu = hru(j)%luse%urb_lu
@@ -68,15 +68,17 @@
       if (qday > 1.e-6 .and. qp_cms > 1.e-6) then
         call ero_eiusle
 
-	!! calculate sediment erosion by rainfall and overland flow
-		call ero_ovrsed
+    !! calculate sediment erosion by rainfall and overland flow
+        call ero_ovrsed
       end if
 
-      call ero_cfactor
-      if (surfq(j) > 1.e-6 .and. qp_cms > 1.e-6) call ero_ysed
+      if (surfq(j) > 1.e-6 .and. qp_cms > 1.e-6) then
+        call ero_cfactor
+        call ero_ysed
+      end if
 
       if (qday < 0.) qday = 0.
 
-1010  format (2(i4,1x),a5,a4,1x,10f8.3)
+!*** tu Wunused-label: 1010  format (2(i4,1x),a5,a4,1x,10f8.3)
       return
       end subroutine surface

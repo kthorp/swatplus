@@ -38,7 +38,7 @@
         integer :: fireop_db = 0      !! none     |fire data
         integer :: grassop_db = 0     !! none     |grassed waterways data
         integer :: plparmop_db = 0    !! none     |plant parms update data
-        integer :: rsdmgtop_db = 0    !! none     |residue mangement data
+        integer :: rsdmgtop_db = 0    !! none     |residue management data
         integer :: bmpuserop_db = 0   !! none     |user defined upland CP removal
         integer :: cond = 0           !! none     |conditional data
         integer :: initop_db = 0      !! none     |initial.str
@@ -52,8 +52,8 @@
         integer :: wndfiles = 0       !! none     |max wind files included in the wnd.cli
         integer :: cal_parms = 0      !! none     |max number of calibration parameters in cal_parms_upd
         integer :: cal_upd = 0        !! none     |max number of calibration parameter updates
-        integer :: sched_up = 0       !! none     |max number of scheduled updates (paramters, structures, land_use_mgt)
-        integer :: cond_up = 0        !! none     |max number of conditional updates (paramters, structures, land_use_mgt)
+        integer :: sched_up = 0       !! none     |max number of scheduled updates (parameters, structures, land_use_mgt)
+        integer :: cond_up = 0        !! none     |max number of conditional updates (parameters, structures, land_use_mgt)
         integer :: d_tbl = 0          !! none     |max number of decision tables
         integer :: dtbl_lum = 0       !! none     |max number of decision tables
         integer :: dtbl_res = 0       !! none     |max number of decision tables
@@ -81,7 +81,7 @@
         integer :: plcal_reg = 0      !! none     |max number of regions for plant calibration
         integer :: ch_reg = 0         !! none     |max number of regions for channel calibration
         integer :: lscal_prms = 0     !! none     |max number of parameters for landscape hru calibration
-        integer :: res_dat = 0      
+        integer :: res_dat = 0
         integer :: res_init = 0
         integer :: res_hyd = 0
         integer :: res_sed = 0
@@ -89,7 +89,7 @@
         integer :: res_salt = 0 !rtb salt
         integer :: res_cs = 0 !rtb cs
         integer :: res_weir = 0
-        integer :: wet_dat = 0      
+        integer :: wet_dat = 0
         integer :: wet_hyd = 0
         integer :: ch_surf = 0
         integer :: ch_dat = 0
@@ -104,14 +104,14 @@
         integer :: exco_om = 0
         integer :: exco_pest = 0
         integer :: exco_path = 0
-        integer :: exco_hmet = 0 
+        integer :: exco_hmet = 0
         integer :: exco_salt = 0
         integer :: dr = 0
         integer :: dr_om = 0
         integer :: trt_om = 0
         integer :: dr_pest = 0
         integer :: dr_path = 0
-        integer :: dr_hmet = 0 
+        integer :: dr_hmet = 0
         integer :: dr_salt = 0
         integer :: sol_plt_ini = 0
         integer :: pest_ini = 0
@@ -137,8 +137,8 @@
         integer :: pudl_db = 0
         integer :: recall_max = 0
         integer :: object_prt = 0
-        integer :: ctbl_res
-        integer :: ch_sednut
+        integer :: ctbl_res = 0
+        integer :: ch_sednut = 0
       end type data_files_max_elements
       type (data_files_max_elements), save :: db_mx
                                  

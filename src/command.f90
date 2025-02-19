@@ -28,26 +28,29 @@
       implicit none
 
       real, dimension(time%step) :: hyd_flo     !flow hydrograph
-      integer :: in                   !              | 
-      integer :: iob                  !              |
-      integer :: iday                 !              |
-      integer :: isd                  !none          |counter
-      integer :: ires                 !none          |reservoir number
-      integer :: irec                 !              |
-      integer :: iout                 !none          |counter
-      integer :: ihtyp                !              |
-      integer :: iaq                  !none          |counter
-      integer :: j                    !none          |counter
-      integer :: nly, ly
-      integer :: ihyd                 !              |
-      integer :: idr                  !              |
-      integer :: iwro                 !              |
-      real :: conv                    !              |
-      real :: frac_in                 !              |
-      integer :: ts1,ts2
-      integer i_count                 !rtb gwflow
-      integer :: i_mfl,i_chan         !rtb gwflow    |counter
-      real :: sumflo
+      integer :: in = 0               !              | 
+      integer :: iob = 0              !              |
+      integer :: iday = 0             !              |
+      integer :: isd = 0              !none          |counter
+      integer :: ires = 0             !none          |reservoir number
+      integer :: irec = 0             !              |
+      integer :: iout = 0             !none          |counter
+      integer :: ihtyp = 0            !              |
+      integer :: iaq = 0              !none          |counter
+      integer :: j = 0                !none          |counter
+      integer :: nly = 0
+      integer :: ly = 0
+      integer :: ihyd = 0             !              |
+      integer :: idr = 0              !              |
+      integer :: iwro = 0             !              |
+      real :: conv = 0.               !              |
+      real :: frac_in = 0.            !              |
+      integer :: ts1 = 0
+      integer :: ts2 = 0
+      integer :: i_count = 0          !rtb gwflow
+      integer :: i_mfl = 0            !rtb gwflow    |counter
+      integer :: i_chan = 0           !rtb gwflow    |counter
+      real :: sumflo = 0.
 
       icmd = sp_ob1%objs
       do while (icmd /= 0)
@@ -101,13 +104,18 @@
               !! if incoming object is not an hru or ru, send total hyd to surface runoff
               if (ob(icmd)%obtyp_in(in) == "hru" .or. ob(icmd)%obtyp_in(in) == "ru" .or.          &
                                                        ob(icmd)%obtyp_in(in) == "hru_lte") then
-                ! recieving hru, needs %hin_sur and %hin_lat and %hin_til to route separately in hru_control
+                ! receiving hru, needs %hin_sur and %hin_lat and %hin_til to route separately in hru_control
                 if (ob(icmd)%htyp_in(in) == "tot") then
                   ! if total hyd coming in from hru or ru -> add both surface and lateral flows
                   ! add to surface runon
                   ob(icmd)%hin_sur = ob(icmd)%hin_sur + frac_in * ob(iob)%hd(3)
                   if (cs_db%num_tot > 0 .and. obcs_alloc(icmd).eq.1) then
                     obcs(icmd)%hin_sur(1) = obcs(icmd)%hin_sur(1) + frac_in * obcs(iob)%hd(3)
+                  end if
+                  ! add to tile flow
+                  ob(icmd)%hin_til = ob(icmd)%hin_til + frac_in * ob(iob)%hd(5)
+                  if (cs_db%num_tot > 0 .and. obcs_alloc(icmd).eq.1) then
+                    obcs(icmd)%hin_til(1) = obcs(icmd)%hin_til(1) + frac_in * obcs(iob)%hd(5)
                   end if
                   ! add to lateral soil runon
                   ob(icmd)%hin_lat = ob(icmd)%hin_lat + frac_in * ob(iob)%hd(4)
@@ -215,6 +223,8 @@
                 sumflo = sum (hyd_flo(:))
                 sumflo = 1. * sumflo
               case ("res")      ! reservoir inflow
+                hyd_flo(:) = ob(iob)%hd(ihyd)%flo / time%step
+              case ("outlet")      ! outlet inflow
                 hyd_flo(:) = ob(iob)%hd(ihyd)%flo / time%step
               case ("recall")   ! point source inflow
                 irec = ob(iob)%num
@@ -348,15 +358,7 @@
             isdch = ob(icmd)%num
             isd_chsur = ob(icmd)%props2
             if (sd_ch(isdch)%chl > 1.e-3) then
-              if (bsn_cc%i_fpwet == 0) then
-                call sd_channel_control3
-              end if
-              if (bsn_cc%i_fpwet == 1) then
-                call sd_channel_control
-              end if
-              if (bsn_cc%i_fpwet == 2) then
-                call sd_channel_control2
-              end if
+              call sd_channel_control3
             else
                 !! artificial channel - length=0 - no transformations
                 ob(icmd)%hd(1) = ob(icmd)%hin
@@ -467,32 +469,44 @@
           !! carbon output for testing  ***jga
           !if ((time%yrc == 2007 .AND. time%day == 213) .OR. (time%yrc == 2010 .AND. time%day == 319)            &
           !                                              .OR.(time%yrc == 2011 .AND. time%day == 324)) then 
-          if (ihru == 1) then
-            do nly = 1, soil(ihru)%nly
-              !soil1(ihru)%tot(nly)%c = soil1(ihru)%hact(nly)%c + soil1(ihru)%hsta(nly)%c + soil1(ihru)%microb(nly)%c
-            end do
-            write (9999,*) time%day, time%mo, time%day_mo, time%yrc, ob(ihru)%typ, ob(ihru)%name,           &
-                                                   (soil1(ihru)%tot(ly)%c/1000, ly = 1, soil(ihru)%nly)
-          end if
+
+          ! the following was moved to soil_nutcarb_write.f90 by FG.
+          ! if (ihru == 1) then
+          !   if (bsn_cc%cswat /= 2) then
+          !     do nly = 1, soil(ihru)%nly
+          !       soil1(ihru)%tot(nly)%c = soil1(ihru)%hact(nly)%c + soil1(ihru)%hsta(nly)%c + soil1(ihru)%microb(nly)%c
+          !     end do
+          !   end if
+          !   write (9999,*) time%day, time%mo, time%day_mo, time%yrc, ob(ihru)%typ, ob(ihru)%name,           &
+          !                                          (soil1(ihru)%tot(ly)%c/1000.0, ly = 1, soil(ihru)%nly)
+          ! end if
                                                         
-        select case (pco%carbout)
-        !! write carbon in soil, plant, and residue at end of the day
-          case ("d")
-            call soil_nutcarb_write
-          !! write carbon in soil, plant, and residue at end the month    
-          case ("m")
-            if (time%end_mo == 1) then
-              call soil_nutcarb_write
-            end if 
-          !! write carbon in soil, plant, and residue at end of year  
-          case ("y")
-            if (time%end_yr == 1) then
-              call soil_nutcarb_write
-            end if
-         !! write carbon in soil, plant, and residue at end the simulation  
-          case ("a") 
-              call soil_nutcarb_write 
-         end select 
+        if (pco%cb_hru%d == "y") call soil_nutcarb_write(" d")
+        if (pco%cb_hru%d == "l") call soil_nutcarb_write("dl")
+        if (pco%cb_hru%m == "y" .and. time%end_mo == 1) call soil_nutcarb_write(" m")
+        if (pco%cb_hru%m == "l" .and. time%end_mo == 1) call soil_nutcarb_write("ml")
+        if (pco%cb_hru%y == "y" .and. time%end_yr == 1) call soil_nutcarb_write(" y") 
+        if (pco%cb_hru%y == "l" .and. time%end_yr == 1) call soil_nutcarb_write("yl") 
+        ! if (pco%cb_hru%a == "y" .and. time%end_yr == 1) call soil_nutcarb_write("a")
+
+        ! select case (pco%carbout)
+        ! !! write carbon in soil, plant, and residue at end of the day
+        !   case ("d")
+        !     call soil_nutcarb_write(pco%carbout)
+        !   !! write carbon in soil, plant, and residue at end the month    
+        !   case ("m")
+        !     if (time%end_mo == 1) then
+        !       call soil_nutcarb_write(pco%carbout)
+        !     end if 
+        !   !! write carbon in soil, plant, and residue at end of year  
+        !   case ("y")
+        !     if (time%end_yr == 1) then
+        !       call soil_nutcarb_write(pco%carbout)
+        !     end if
+        !  !! write carbon in soil, plant, and residue at end the simulation  
+        !   case ("a") 
+        !       call soil_nutcarb_write(pco%carbout)
+        !  end select 
         
         end do      ! hru loop  
         
@@ -539,7 +553,7 @@
             call res_pesticide_output (j)
             if (cs_db%num_salts > 0) then !rtb salt
               call res_salt_output (j)
-						endif
+            endif
             if (cs_db%num_cs > 0) then !rtb cs
               call res_cs_output (j)
             endif

@@ -28,7 +28,7 @@
       type (res_cs_output), dimension(:), allocatable, save :: rescs_m
       type (res_cs_output), dimension(:), allocatable, save :: rescs_y
       type (res_cs_output), dimension(:), allocatable, save :: rescs_a
-			
+            
       !arrays for wetland mass balance output
       type (res_cs_output), dimension(:), allocatable, save :: wetcs_d
       type (res_cs_output), dimension(:), allocatable, save :: wetcs_m
@@ -37,7 +37,7 @@
       
       !reservoir constituent parameters
       type reservoir_cs_data
-        character(len=25) :: name
+        character(len=25) :: name = ""
         real :: v_seo4 = 0.001            !m/day      |settling rate for selenate
         real :: v_seo3 = 0.001            !m/day      |settling rate for selinite
         real :: v_born = 0.001            !m/day      |settling rate for boron
@@ -60,7 +60,7 @@
           character (len=6) :: day_mo =     "   day"
           character (len=6) :: yrc =        "    yr"
           character (len=8) :: isd =        "   unit "
-          character (len=12) :: id =        " gis_id "           
+          character (len=12) :: id =        " gis_id "
           character(len=15) :: seo4in =     "seo4_in "
           character(len=15) :: seo3in =     "seo3_in  "
           character(len=15) :: bornin =     "born_in  "

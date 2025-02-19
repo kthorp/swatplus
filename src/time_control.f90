@@ -47,35 +47,40 @@
       use sd_channel_module
       use hru_lte_module
       use basin_module
-      use hydrograph_module, only : sp_ob, sp_ob1, ob, chaz, ch_stor_y, ch_in_y, ch_out_y
+      use hydrograph_module  !, only : sp_ob, sp_ob1, ob, chaz, ch_stor_y, ch_in_y, ch_out_y,   &
+                             !                                 res_trap, res_out_a, res_in_a 
       use output_landscape_module
       use conditional_module
       use constituent_mass_module
       use output_ls_pesticide_module
       use water_body_module
       use water_allocation_module
+      !use reservoir_data_module
       
       implicit none
 
-      integer :: j                   !none          |counter
-      integer :: julian_day          !none          |counter
-      integer :: id                  !              |
-      integer :: isched              !              |
-      integer :: ich                 !none          |counter
-      integer :: idp                 !              |
-      integer :: iplt
-      integer :: iupd                !none          |counter
-      integer :: ipest               !none          |counter
-      integer :: date_time(8)        !              | 
+      integer :: j = 0               !none          |counter
+      integer :: julian_day = 0      !none          |counter
+      integer :: id = 0              !              |
+      integer :: isched = 0          !              |
+      !integer :: ich = 0             !none          |counter
+      integer :: idp = 0             !              |
+      integer :: iplt = 0
+      integer :: iupd = 0            !none          |counter
+      integer :: ipest = 0           !none          |counter
+      integer :: date_time(8) = 0    !              | 
       character*10 b(3)              !              |
-      real :: crop_yld_t_ha          !t/ha          |annual and ave annual basin crop yields
-      real :: sw_init
-      real :: sno_init
-      integer :: iob                 !              |
-      integer :: curyr               !              |
-      integer :: mo                  !              |
-      integer :: day_mo              !              |
-      integer :: iwallo, imallo
+      real :: crop_yld_t_ha = 0.     !t/ha          |annual and ave annual basin crop yields
+      real :: sw_init = 0.
+      real :: sno_init = 0.
+      integer :: iob = 0             !              |
+      integer :: curyr = 0           !              |
+      integer :: mo = 0              !              |
+      integer :: day_mo = 0          !              |
+      integer :: iwallo = 0
+      integer :: imallo = 0
+      integer :: ires = 0
+      
       time%yrc = time%yrc_start
       
       !! generate precip for the first day - %precip_next
@@ -141,7 +146,7 @@
         !! set initial soil water for hru, basin and lsu - for checking water balance
         if (pco%sw_init == "n") then
           if (time%yrs > pco%nyskip) then
-            call basin_sw_init
+            call basin_sw_init     !***jga 
             call aqu_pest_output_init
             pco%sw_init = "y"  !! won't reset again
           end if
@@ -219,21 +224,10 @@
           do iupd = 1, db_mx%cond_up
             id = upd_cond(iupd)%cond_num
             d_tbl => dtbl_scen(id)
-            !if (upd_cond(iupd)%num_hits < upd_cond(iupd)%max_hits) then
-            !  upd_cond(iupd)%num_hits = upd_cond(iupd)%num_hits + 1
-              !! all hru fractions are set at once
-              if (upd_cond(iupd)%typ == "basin") then
-                call conditions (j, id)
-                call actions (j, iob, id)
-              end if
-              !! have to check every hru for land use change
-              if (upd_cond(iupd)%typ == "lu_change") then
-                do j = 1, sp_ob%hru
-                  call conditions (j, id)
-                  call actions (j, iob, id)
-                end do
-              end if
-            !end if            
+            do j = 1, sp_ob%hru
+              call conditions (j, id)
+              call actions (j, iob, id)
+            end do
           end do
 
           !! allocate water for water rights objects
@@ -283,7 +277,7 @@
         if (sp_ob%hru > 0) then
         do iplt = 1, basin_plants
           crop_yld_t_ha = bsn_crop_yld(iplt)%yield / (bsn_crop_yld(iplt)%area_ha + 1.e-6)
-          write (5100,*) time%yrc, iplt, plants_bsn(iplt), bsn_crop_yld(iplt)%area_ha,            &
+          write (5100,*) time%yrc, iplt, plts_bsn(iplt), bsn_crop_yld(iplt)%area_ha,            &
                                                 bsn_crop_yld(iplt)%yield, crop_yld_t_ha
           bsn_crop_yld_aa(iplt)%area_ha = bsn_crop_yld_aa(iplt)%area_ha + bsn_crop_yld(iplt)%area_ha
           bsn_crop_yld_aa(iplt)%yield = bsn_crop_yld_aa(iplt)%yield + bsn_crop_yld(iplt)%yield
@@ -292,7 +286,7 @@
             crop_yld_t_ha = bsn_crop_yld_aa(iplt)%yield / (bsn_crop_yld_aa(iplt)%area_ha + 1.e-6)
             bsn_crop_yld_aa(iplt)%area_ha = bsn_crop_yld_aa(iplt)%area_ha / time%yrs_prt
             bsn_crop_yld_aa(iplt)%yield = bsn_crop_yld_aa(iplt)%yield / time%yrs_prt
-            write (5101,*) time%yrc, iplt, plants_bsn(iplt), bsn_crop_yld_aa(iplt)%area_ha,   &
+            write (5101,*) time%yrc, iplt, plts_bsn(iplt), bsn_crop_yld_aa(iplt)%area_ha,   &
                                                 bsn_crop_yld_aa(iplt)%yield, crop_yld_t_ha
             bsn_crop_yld_aa(iplt) = bsn_crop_yld_z
           end if
@@ -370,12 +364,20 @@
       
       do ich = 1, sp_ob%chandeg
         !! write channel morphology - downcutting and widening
-        ch_morph(ich)%w_yr = ch_morph(ich)%w_yr / sd_ch(ich)%chw / time%yrs_prt
+        ch_morph(ich)%w_yr = ch_morph(ich)%w_yr / 1000. / sd_ch(ich)%chw / time%yrs_prt
         ch_morph(ich)%d_yr = ch_morph(ich)%d_yr / sd_ch(ich)%chd / time%yrs_prt
         ch_morph(ich)%fp_mm = ch_morph(ich)%fp_mm / (3. * sd_ch(ich)%chw *           &
                                          sd_ch(ich)%chl * 1000.) / time%yrs_prt
         iob = sp_ob1%chandeg + ich - 1
-        write (7778,*) ich, ob(iob)%name, ch_morph(ich)%w_yr, ch_morph(ich)%d_yr, ch_morph(ich)%fp_mm
+        write (7778,*) ich, ob(iob)%name, ob(iob)%area_ha, ch_morph(ich)%w_yr,       &
+                                           ch_morph(ich)%d_yr, ch_morph(ich)%fp_mm
+      end do
+      
+      do ich = 1, sp_ob%res
+        !! write reservoir trap efficiencies
+        !res_trap(ires) = res_out_a(ires) / res_in_a(ires)
+        !iob = sp_ob1%res + ires - 1
+        !write (7778,*) ires, ob(iob)%name, ob(iob)%area_ha, res_trap(ires)
       end do
           
       !! ave annual calibration output and reset time for next simulation

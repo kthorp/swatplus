@@ -9,17 +9,17 @@
       
       implicit none
         
-      integer :: ihd           !            |
-      integer :: iob           !            | 
-      integer :: iunit         !            |
-      integer :: itot          !none        |counter       
-      integer :: nly
-      integer :: ly
-      integer :: j
-      integer :: ii
-      integer :: ipl
+      integer :: ihd = 0       !            |
+      integer :: iob = 0       !            | 
+      integer :: iunit = 0     !            |
+      integer :: itot = 0      !none        |counter       
+      integer :: nly = 0
+      integer :: ly = 0
+      integer :: j = 0
+      integer :: ii = 0
+      integer :: ipl = 0
       
-      character(100) :: lineFmt !used to format plant status write statement
+      character(100) :: lineFmt = ""!used to format plant status write statement
       
       lineFmt ='1((4X, 1A),(16X, 1A),(18X, 1A), 10(4X,F)),1(17XA, 2(12X,A), 4X, 10(4X,F)))'
 
@@ -39,7 +39,7 @@
                   !write (iunit+itot,*) iob, time%yrc,time%day, ii, ob(iob)%hyd_flo(1,ii)
                   write (iunit+itot,*) time%day, time%mo, time%day_mo, time%yrc, ob(iob)%typ, ob(iob)%name, iob, ii, &
                             ob(iob)%hyd_flo(1,ii)
-	            end do
+                end do
               else  
                 write (iunit+itot,*) time%day, time%mo, time%day_mo, time%yrc, ob(iob)%typ, ob(iob)%name, ob(iob)%hd(ihd)
               end if
@@ -135,7 +135,7 @@
               end if
               
             case (11)    !!!! DUMMY OBJ FOR CARBON
-                !!!! check for specfic days
+                !!!! check for specific days
                 if ((time%yrc == 2007 .AND. time%day == 213) .OR. (time%yrc == 2010 .AND. time%day == 319) &
                     .OR.(time%yrc == 2011 .AND. time%day == 324)) then
                    write (iunit+itot,*) '---', '    jday                    m           d           yr'
@@ -145,7 +145,7 @@
                         write (iunit+itot,*)time%day, time%mo, time%day_mo, time%yrc
                 end if
                 do j = 1, sp_ob%hru
-                    soil_prof_microb%c = soil_org_z%c !!!! zero out microb accumalated for each hru
+                    soil_prof_microb%c = soil_org_z%c !!!! zero out microb accumulated for each hru
                         write (iunit+itot,*) ob(j)%name, "  hact         hsta         microb(ly)        tot%C     Mgc/ha", &
                                 "           hact         hsta         microb(acc)        SOM%C         Mgc/ha"      
                         do nly = 1, soil(iob)%nly

@@ -456,44 +456,76 @@
 !!! NEW SOILC_STAT/RESC_STAT/PLC_STAT CARBON OUTPUT FILES
 
         !! write carbon in soil by layer
-        open (9999,file = "hru_cbn_lyr.txt", recl = 1500)
-          write (9999,*)  bsn%name, prog
-          write (9999,*)                                     &
-    "        jday        mon          day       year hru     name               total soil carbon (kg/ha) by layer "
-    
-        !! write carbon in soil, plant, and residue
-        open (4560,file = "hru_plc_stat.txt", recl = 1500)
-        if (pco%nb_hru%a == "y") then
-          write (4560,*)  bsn%name, prog
-          write (4560,*) plc_hdr
-          write (4560,*) plc_hdr_units
-          write (9000,*) "HRU                       hru_plc_stat.txt"
-            if (pco%csvout == "y") then
-              open (4563,file="hru_plc_stat.csv", recl = 1500)
-              write (4563,*)  bsn%name, prog
-              write (4563,'(*(G0.3,:,","))') plc_hdr
-              write (4563,'(*(G0.3,:,","))') plc_hdr_units
-              write (9000,*) "HRU                       hru_plc_stat.csv"
-            end if
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
+          open (4548,file = "hru_cbn_lyr.txt", recl = 1500)
+          write (4548,*)  bsn%name, prog
+          write (4548,*)                                     &
+            "freq          jday         mon         day        year        unit hru     name               total soil carbon (Mg/ha) by layer "
+          write (9000,*) "HRU                       hru_cbn_lyr.txt"
+          if (pco%csvout == "y") then
+            open (4549,file="hru_cbn_lyr.csv", recl = 1500)
+            write (4549,*)  bsn%name, prog
+            write (4549,*)                  &
+            "freq,jday,mon,day,year,unit,hru,name,total soil carbon (Mg/ha) by layer"
+            write (9000,*) "HRU                       hru_cbn_lyr.csv"
+          end if
         endif
     
-        open (4561,file = "hru_resc_stat.txt", recl = 1500)
-        if (pco%nb_hru%a == "y") then
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
+          open (4558,file = "hru_seq_lyr.txt", recl = 1500)
+          write (4558,*)  bsn%name, prog
+          write (4558,*)                                     &
+            "freq          jday         mon         day        year        unit hru     name               total sequestered soil carbon (Mg/ha) by layer "
+          write (9000,*) "HRU                       hru_seq_lyr.txt"
+          if (pco%csvout == "y") then
+            open (4559,file="hru_seq_lyr.csv", recl = 1500)
+            write (4559,*)  bsn%name, prog
+            write (4559,*)                  &
+            "freq,jday,mon,day,year,unit,hru,name,total sequestered soil carbon (Mg/ha) by layer"
+            write (9000,*) "HRU                       hru_seq_lyr.csv"
+          end if
+        endif
+    
+        !! write carbon in soil, plant, and residue
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
+          open (4560,file = "hru_plc_stat.txt", recl = 1500)
+          if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y") then
+            write (4560,*)  bsn%name, prog
+            write (4560,*) plc_hdr
+            write (4560,*) plc_hdr_units
+            write (9000,*) "HRU                       hru_plc_stat.txt"
+              if (pco%csvout == "y") then
+                open (4563,file="hru_plc_stat.csv", recl = 1500)
+                write (4563,*)  bsn%name, prog
+                write (4563,'(*(G0.3,:,","))') plc_hdr
+                write (4563,'(*(G0.3,:,","))') plc_hdr_units
+                write (9000,*) "HRU                       hru_plc_stat.csv"
+              end if
+          endif
+        endif
+    
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
+          open (4561,file = "hru_rsdc_stat.txt", recl = 1500)
           write (4561,*)  bsn%name, prog
-          write (4561,*) resc_hdr
-          write (4561,*) resc_hdr_units
-          write (9000,*) "HRU                       hru_resc_stat.txt"
+          write (4561,*) rsdc_hdr
+          write (4561,*) rsdc_hdr_units
+          write (9000,*) "HRU                       hru_rsdc_stat.txt"
             if (pco%csvout == "y") then
-              open (4564,file="hru_resc_stat.csv", recl = 1500)
+              open (4564,file="hru_rsdc_stat.csv", recl = 1500)
               write (4564,*)  bsn%name, prog
-              write (4564,'(*(G0.3,:,","))') resc_hdr
-              write (4564,'(*(G0.3,:,","))') resc_hdr_units
-              write (9000,*) "HRU                       hru_resc_stat.csv"
+              write (4564,'(*(G0.3,:,","))') rsdc_hdr
+              write (4564,'(*(G0.3,:,","))') rsdc_hdr_units
+              write (9000,*) "HRU                       hru_rsdc_stat.csv"
             end if
         endif
         
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
         open (4562,file = "hru_soilc_stat.txt", recl = 1500)
-        if (pco%nb_hru%a == "y") then
           write (4562,*)  bsn%name, prog
           write (4562,*) soilc_hdr
           write (4562,*) soilc_hdr_units
@@ -506,7 +538,39 @@
               write (9000,*) "HRU                       hru_soilc_stat.csv"
             end if
         endif
+
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
+        open (4567,file = "hru_cflux_stat.txt", recl = 1500)
+          write (4567,*)  bsn%name, prog
+          write (4567,*) soil_org_flux_hdr
+          write (4567,*) soil_org_flux_hdr_units
+          write (9000,*) "HRU                       hru_cflux_stat.txt"
+            if (pco%csvout == "y") then
+              open (4568,file="hru_cflux_stat.csv", recl = 1500)
+              write (4568,*)  bsn%name, prog
+              write (4568,'(*(G0.3,:,","))') soil_org_flux_hdr
+              write (4568,'(*(G0.3,:,","))') soil_org_flux_hdr_units
+              write (9000,*) "HRU                       hru_cflux_stat.csv"
+            end if
+        endif
         
+        if (pco%cb_hru%d == "y" .or. pco%cb_hru%m == "y"  .or. pco%cb_hru%y == "y" .or. & 
+            pco%cb_hru%d == "l" .or. pco%cb_hru%m == "l"  .or. pco%cb_hru%y == "l") then
+        open (4570,file = "hru_soilcarb_mb_stat.txt", recl = 1500)
+          write (4570,*)  bsn%name, prog
+          write (4570,*) soil_mb_hdr
+          write (4570,*) soil_mb_units
+          write (9000,*) "HRU                       hru_soilcarb_mb_stat.txt"
+            if (pco%csvout == "y") then
+              open (4571,file="hru_soil_carb_mb_stat.csv", recl = 1500)
+              write (4571,*)  bsn%name, prog
+              write (4571,'(*(G0.3,:,","))') soil_mb_hdr
+              write (4571,'(*(G0.3,:,","))') soil_mb_units
+              write (9000,*) "HRU                       hru_soilcarb_mb_stat.csv"
+            end if
+        endif
+
  !!! NEW SOILC_STAT/RESC_STAT/PLC_STAT CARBON OUTPUT FILES
         
  !! NEW BASIN CARBON ALL OUTPUT FILE
@@ -1408,9 +1472,9 @@
 !!! CROP YIELDS - output file only written for yearly or annual timesteps; "b" = both files written;
       if (pco%crop_yld == "y" .or. pco%crop_yld == "b") then
         !! headers for yearly crop yields
-        open (4010,file="crop_yld_yr.txt")
+        open (4010,file="crop_yld_yr.txt", recl = 1500)
         write (4010,*) bsn%name, prog
-          write (4010,1000)
+        write (4010,1000)
         write (9000,*) "CROP                      crop_yld_yr.txt"
         if (pco%csvout == "y") then
             open (4011,file="crop_yld_yr.csv")
@@ -1422,9 +1486,9 @@
               
       !! headers for annual crop yields
       if (pco%crop_yld == "a" .or. pco%crop_yld == "b") then
-        open (4008,file="crop_yld_aa.txt")
+        open (4008,file="crop_yld_aa.txt", recl = 1500)
         write (4008,*) bsn%name, prog
-          write (4008,1000)
+        write (4008,1000)
         write (9000,*) "CROP                      crop_yld_aa.txt"
         if (pco%csvout == "y") then
             open (4009,file="crop_yld_aa.csv")

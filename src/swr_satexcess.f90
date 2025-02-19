@@ -24,13 +24,13 @@
       
       implicit none
 
-      integer :: j                 !none          |HRU number
-      real:: ul_excess             !              |
-      real :: rto                  !              |
-      integer :: nn                !none          |number of soil layers
-      integer :: ly                !none          |counter
-      integer :: ly1               !none          |counter
-      integer :: ires                !none          |counter
+      integer :: j = 0             !none          |HRU number
+      real:: ul_excess = 0.        !              |
+      real :: rto = 0.             !              |
+      integer :: nn = 0            !none          |number of soil layers
+      integer :: ly = 0            !none          |counter
+      integer :: ly1 = 0           !none          |counter
+      integer :: ires = 0            !none          |counter
 
       j = ihru
       ires =  hru(j)%dbs%surf_stor
@@ -86,7 +86,7 @@
                 rto = ul_excess / hru(j)%water_seep           
                 rto = amin1 (1., rto)
                 hru(j)%water_seep = rto * hru(j)%water_seep     !updated infiltration volume of the standing water
-                !! substract the fraction of nutrient in the top soil layer
+                !! subtract the fraction of nutrient in the top soil layer
                 soil1(j)%mn(1)%no3 = soil1(j)%mn(1)%no3 - wet_seep_day(j)%no3 * rto / hru(j)%area_ha !kg/ha
                 soil1(j)%mn(1)%nh4 = soil1(j)%mn(1)%nh4 - wet_seep_day(j)%nh3 * rto / hru(j)%area_ha !kg/ha
                 soil1(j)%mp(1)%act = soil1(j)%mp(1)%act - wet_seep_day(j)%solp * rto / hru(j)%area_ha !kg/ha

@@ -45,14 +45,14 @@
 
       implicit none
 
-      integer :: j           !none      |hru number
-      integer :: l           !none      |counter (soil layer)
-      real :: uno3l          !kg N/ha   |plant nitrogen demand
-      integer :: idp         !          |       
-      real :: root_depth     !mm        |root depth
-      real :: unmx           !kg N/ha   |maximum amount of nitrogen that can be removed from soil layer
-      real :: soil_depth     !mm        |lowest depth in layer from which nitrogen may be removed
-      real :: xx             !          |  
+      integer :: j = 0       !none      |hru number
+      integer :: l = 0       !none      |counter (soil layer)
+      real :: uno3l = 0.     !kg N/ha   |plant nitrogen demand
+      integer :: idp = 0     !          |       
+      real :: root_depth = 0.  !mm        |root depth
+      real :: unmx = 0.      !kg N/ha   |maximum amount of nitrogen that can be removed from soil layer
+      real :: soil_depth = 0.  !mm        |lowest depth in layer from which nitrogen may be removed
+      real :: xx = 0.        !          |  
       integer :: max         !          |
   
       j = ihru
@@ -81,6 +81,7 @@
         !uno3l = Min(unmx, soil1(j)%mn(l)%no3)
         nplnt(j) = nplnt(j) + uno3l 
         soil1(j)%mn(l)%no3 = soil1(j)%mn(l)%no3 - uno3l
+        ! print*, "in pl_nup.f90", l, soil1(j)%mn(l)%no3, uno3l 
       end do
       if (nplnt(j) < 0.) nplnt(j) = 0.
 

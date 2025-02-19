@@ -2,51 +2,45 @@
     
       implicit none
       
-      character(len=80) :: prog
+      character(len=80) :: prog = ""
       
-      real :: ban_precip_aa
+      real :: ban_precip_aa = 0.
       
       type basin_inputs
-        character(len=25) :: name
+        character(len=25) :: name = ""
         real :: area_ls_ha = 0.
-        real :: area_tot_ha = 0. 
+        real :: area_tot_ha = 0.
       end type basin_inputs
       type (basin_inputs) :: bsn
       
       type basin_control_codes
         !character(len=16) :: update     !! pointer to basin updates in schedule.upd                                      
         character(len=16) :: petfile ='         pet.cli'    !! potential et filename
-        character(len=16) :: wwqfile     !! watershed stream water quality filename
+        character(len=16) :: wwqfile = ""  !! watershed stream water quality filename
         integer :: pet = 0       !! potential ET method code
                                  !!   0 = Priestley-Taylor 
                                  !!   1 = Penman-Monteith
                                  !!   2 = Hargreaves method
-                                 !!   3 = read in daily pot ET values
-        integer :: event = 0     !! event code
+        integer :: nam1 = 0      !! not used
         integer :: crk = 0       !! crack flow code 
                                  !!   1 = compute flow in cracks
         integer :: swift_out = 0 !! write to SWIFT input file
                                  !!   0 = do not write
                                  !!   1 = write to swift_hru.inp
-        integer :: sed_det = 0   !! max half-hour rainfall frac calc
-                                 !!   0 = gen from triangular dist
-                                 !!   1 = use monthly mean frac
+        integer :: sed_det = 0   !! peak rate method
+                                 !!   0 = NRCS dimensionless hydrograph with PRF
+                                 !!   1 = half hour rainfall intensity method
         integer :: rte = 0       !! water routing method
                                  !!   0 variable storage method
                                  !!   1 Muskingum method
-        integer :: deg = 0       !! channel degradation code
-                                 !!   0 = do not compute
-                                 !!   1 = compute (downcutting and widening)
-        integer :: wq = 0        !! stream water quality code
-                                 !!   0 do not model
-                                 !!   1 model (QUAL2E)
+        integer :: deg = 0       !! not used
+        integer :: wq = 0        !! not used
         integer :: nostress = 0  !! redefined to the sequence number  -- changed to no nutrient stress
                                  !!   0 = all stresses applied
                                  !!   1 = turn off all plant stress
                                  !!   2 = turn off nutrient plant stress only
         integer :: cn = 0        !! not used
-        integer :: cfac = 0      !!  0 = C-factor calc using CMIN
-                                 !!  1 = for new C-factor from RUSLE (no min needed)      
+        integer :: cfac = 0      !! not used     
         integer :: cswat = 0     !! carbon code
                                  !!  = 0 Static soil carbon (old mineralization routines)
                                  !!  = 1 C-FARM one carbon pool model 
@@ -57,31 +51,26 @@
         integer :: uhyd = 1      !! Unit hydrograph method: 
                                  !!   0 = triangular UH
                                  !!   1 = gamma function UH
-        integer :: sed_ch = 0    !! Instream sediment model
-                                 !!   0 = Bagnold model
-                                 !!   1 = Brownlie model
-                                 !!   2 = Yang model
+        integer :: sed_ch = 0    !! not used
         integer :: tdrn = 0      !! tile drainage eq code
-                                 !!   1 = sim tile flow using subsurface drains (wt_shall)
-                                 !!   0 = sim tile flow using subsurface origtile (wt_shall,d)
-        integer :: wtdn = 0      !! water table depth algorithms code
-                                 !!   1 = sim wt_shall using subsurface new water table depth routine
-                                 !!   0 = sim wt_shall using subsurface orig water table depth routine
-        integer :: sol_p_model=0 !! 1 = new soil P model
+                                 !!   0 = tile flow using drawdown days equation
+                                 !!   1 = tile flow using drainmod equations
+        integer :: wtdn = 0      !! shallow water table depth algorithms code
+                                 !!   0 = depth using orig water table depth routine - fill to upper limit
+                                 !!   1 = depth using drainmod water table depth routine
+        integer :: sol_p_model=0 !! 0 = original soil P model in SWAT documentation
+                                 !! 1 = new soil P model in Vadas and White (2010)
         integer :: gampt = 0     !! 0 = curve number; 1 = Green and Ampt 
-        character(len=1) :: atmo = "a"   !! atmospheric deposition interval
-                                         !!   "m" = monthly
-                                         !!   "y" = yearly
-                                         !!   "a" = annual
-        integer :: smax = 0      !! max depressional storage selection code
-                                 !!   1 = dynamic stmaxd computed as a cunfction of random
-                                 !!          roughness and rain intensity
-                                 !!   0 = static stmaxd read from .bsn for the global value or .sdr
-                                 !! for specific hrus 
-        integer :: i_fpwet = 0   !! 0 = new sediment and nutrient routing (no QUAL2E - simplified nutrients)
-                                 !! 1 = daily routing with QUAL2E
-                                 !! 2 = subdaily routing - with QUAL2E
-        integer :: gwflow = 0       !!   0 = gwflow module not active; 1 = gwflow module active
+        character(len=1) :: atmo = "a"   !! not used
+        integer :: smax = 0      !! not used
+        integer :: qual2e = 0    !! 0 = instream nutrient routing using QUAL2E 
+                                 !! 1 = instream nutrient routing using QUAL2E - with simplified nutrient transformations
+        integer :: gwflow = 0    !!   0 = gwflow module not active; 1 = gwflow module active
+        integer :: idc_till = 3  !! 1 = Use dssat tillage method to use if cswat = 2 
+                                 !! 2 = Use epic tillage method to use if cswat = 2
+                                 !! 3 = Use Kamanian tillage method to use if cswat = 2
+                                 !! 4 = Use dndc tillage method to use if cswat = 2
+
       end type basin_control_codes
       type (basin_control_codes) :: bsn_cc
 
@@ -117,7 +106,7 @@
         real :: nperco_lchtile = .5 !! n concentration coeff for tile flow and leach from bottom layer
         real :: evrch = 0.60        !! reach evaporation adjustment factor
         real :: scoef = 1.0         !! channel storage coefficient (0-1)
-        real :: cdn = 1.40          !! denitrification expoential rate coefficient        
+        real :: cdn = 1.40          !! denitrification exponential rate coefficient        
         real :: sdnco = 1.30        !! denitrification threshold frac of field cap
         real :: bact_swf = 0.15     !! frac of manure containing active colony forming units
         real :: tb_adj = 0.         !! adjustment factor for subdaily unit hydrograph basetime
@@ -127,13 +116,13 @@
         real :: tlaps = 6.5         !! deg C/km     |temperature lapse rate: deg C per km of elevation difference
         real :: nfixmx = 20.0       !! max daily n-fixation (kg/ha)
         real :: decr_min = 0.01     !! minimum daily residue decay
-        real :: rsd_covco = 0.30    !! residue cover factor for computing frac of cover         
+        real :: rsd_covco = 0.75    !! residue cover factor for computing frac of cover         
         real :: urb_init_abst = 1.  !! maximum initial abstraction for urban areas when using Green and Ampt
         real :: petco_pmpt = 100.0  !! PET adjustment (%) for Penman-Montieth and Preiestly-Taylor methods
         real :: uhalpha = 1.0       !! alpha coeff for est unit hydrograph using gamma func
-        real :: eros_spl = 0.       !! coeff of splash erosion varing 0.9-3.1 
+        real :: eros_spl = 0.       !! coeff of splash erosion varying 0.9-3.1 
         real :: rill_mult = 0.      !! rill erosion coefficient
-        real :: eros_expo = 0.      !! exponential coeffcient for overland flow
+        real :: eros_expo = 0.      !! exponential coefficient for overland flow
         real :: c_factor = 0.       !! scaling parameter for cover and management factor for 
                                     !!  overland flow erosion
         real :: ch_d50 = 0.         !! median particle diameter of main channel (mm)
@@ -162,7 +151,7 @@
         character (len=1)  :: day_print = "n"
         character (len=1)  :: day_print_over = "n"
         integer :: nyskip = 0                           !!  number of years to skip output summarization
-        character (len=1)  :: sw_init = "n"             !!  n=sw not initialized, y=sw intialized for output (when hit nyskip)
+        character (len=1)  :: sw_init = "n"             !!  n=sw not initialized, y=sw initialized for output (when hit nyskip)
       ! DAILY START/END AND INTERVAL
         integer :: day_start = 0                        !!  julian day to start printing output
         integer :: day_end = 0                          !!  julian day to end printing output
@@ -171,18 +160,18 @@
         integer :: int_day = 1                          !!  interval between daily printing
         integer :: int_day_cur = 1                      !!  current day since last print
       ! AVE ANNUAL END YEARS
-        integer :: aa_numint                          !! number of print intervals for ave annual output
+        integer :: aa_numint = 0                      !! number of print intervals for ave annual output
         integer, dimension(:), allocatable :: aa_yrs  !! end years for ave annual output
       ! SPECIAL OUTPUTS
-        character(len=1) :: csvout   = "    n"         !!  code to print .csv files n=no print; y=print;
-        character(len=1) :: carbout  = "    n"         !!  code to print carbon output; d = end of day; m = end of month; y = end of year; a = end of simulation;
-        character(len=1) :: cdfout   = "    n"         !!  code to print netcdf (cdf) files n=no print; y=print;
+        character(len=1) :: csvout   = "n"            !!  code to print .csv files n=no print; y=print;
+        character(len=1) :: carbout  = "n"            !!  code to print carbon output; d = end of day; m = end of month; y = end of year; a = end of simulation;
+        character(len=1) :: cdfout   = "n"            !!  code to print netcdf (cdf) files n=no print; y=print;
       ! OTHER OUTPUTS
         !!   nbs   character(len=1) :: snutc  = "    n"         !!  not used - soils nutrients carbon output (default ave annual-d,m,y,a input)
-        character(len=1) :: crop_yld  = "    a"      !!  crop yields - a=average annual; y=yearly; b=both annual and yearly; n=no print
-        character(len=1) :: mgtout = "    n"         !!  management output file (mgt.out) (default ave annual-d,m,y,a input)
-        character(len=1) :: hydcon = "    n"         !!  hydrograph connect output file (hydcon.out)
-        character(len=1) :: fdcout = "    n"         !!  flow duration curve output n=no print; avann=print; NOT ACTIVE
+        character(len=1) :: crop_yld  = "a"      !!  crop yields - a=average annual; y=yearly; b=both annual and yearly; n=no print
+        character(len=1) :: mgtout = "n"         !!  management output file (mgt.out) (default ave annual-d,m,y,a input)
+        character(len=1) :: hydcon = "n"         !!  hydrograph connect output file (hydcon.out)
+        character(len=1) :: fdcout = "n"         !!  flow duration curve output n=no print; avann=print; NOT ACTIVE
       ! BASIN
         type(print_interval) :: wb_bsn          !!  water balance BASIN output
         type(print_interval) :: nb_bsn          !!  nutrient balance BASIN output
@@ -213,6 +202,7 @@
         type(print_interval) :: nb_hru          !!  nutrient balance HRU output
         type(print_interval) :: ls_hru          !!  losses HRU output
         type(print_interval) :: pw_hru          !!  plant weather HRU output
+        type(print_interval) :: cb_hru          !!  plant weather HRU output
         ! HRU-LTE
         type(print_interval) :: wb_sd           !!  water balance SWAT-DEG output 
         type(print_interval) :: nb_sd           !!  nutrient balance SWAT-DEG output
@@ -259,10 +249,10 @@
           character (len=12) :: mon =       "        mon"
           character (len=11) :: day =       "        day"
           character (len=15) :: crop =      " crop/fert/pest"
-          character (len=12) :: oper =      " operation"          
-          character (len=12) :: phub =      "phubase"  
-          character (len=11) :: phua =      "   phuplant"  
-          character (len=12) :: sw =        "  soil_water" 
+          character (len=12) :: oper =      " operation"
+          character (len=12) :: phub =      "phubase"
+          character (len=11) :: phua =      "   phuplant"
+          character (len=12) :: sw =        "  soil_water"
           character (len=17) :: bio =       "      plant_bioms"
           character (len=11) :: rsd =       "   surf_rsd"
           character (len=15) :: solno3 =    "       soil_no3"
@@ -272,9 +262,9 @@
           character (len=14) :: var2 =      "          var2"
           character (len=17) :: var3 =      "             var3"
           character (len=17) :: var4 =      "             var4"
-          character (len=16) :: var5 =      "            var5"    
-          character (len=16) :: var6 =      "            var6"    
-          character (len=16) :: var7 =      "           var7"    
+          character (len=16) :: var5 =      "            var5"
+          character (len=16) :: var6 =      "            var6"
+          character (len=16) :: var7 =      "           var7"
       end type mgt_header
       type (mgt_header) :: mgt_hdr
 
@@ -284,10 +274,10 @@
           character (len=12) :: mon =       "        --- "
           character (len=12) :: day =       "        --- "
           character (len=11) :: crop =      "      ---  "
-          character (len=13) :: oper =      "       ---   "          
-          character (len=9) :: phub =       "    deg_c"  
-          character (len=16) :: phua =      "           deg_c"  
-          character (len=12) :: sw =        "          mm" 
+          character (len=13) :: oper =      "       ---   "
+          character (len=9) :: phub =       "    deg_c"
+          character (len=16) :: phua =      "           deg_c"
+          character (len=12) :: sw =        "          mm"
           character (len=17) :: bio =       "            kg/ha"
           character (len=11) :: rsd =       "      kg/ha"
           character (len=15) :: solno3 =    "          kg/ha"
@@ -297,9 +287,9 @@
           character (len=15) :: var2 =      "          --- "
           character (len=16) :: var3 =      "            ---"
           character (len=16) :: var4 =      "             ---"
-          character (len=16) :: var5 =      "             ---"       
-          character (len=16) :: var6 =      "             ---"  
-          character (len=15) :: var7 =      "            ---"  
+          character (len=16) :: var5 =      "             ---"
+          character (len=16) :: var6 =      "             ---"
+          character (len=15) :: var7 =      "            ---"
       end type mgt_header_unit1
       type(mgt_header_unit1) :: mgt_hdr_unt1
   
@@ -397,11 +387,11 @@
     !  type(snutc_old_header) :: snutc_old_hdr
       
       type basin_yld_header                              
-          character (len=10) :: year =       "      year "                                                     
+          character (len=11) :: year =       "      year "
           character (len=16) :: plant_no =   "     plant_no"
           character (len=16) :: plant_name = "plant_name "
-          character (len=16) :: area_ha =    " harv_area(ha)   "  
-          character (len=16) :: yield_t =    "  yld(t)         "
+          character (len=17) :: area_ha =    " harv_area(ha)   "
+          character (len=17) :: yield_t =    "  yld(t)         "
           character (len=16) :: yield_tha =  " yld(t/ha)      "
       end type basin_yld_header
       type (basin_yld_header) :: bsn_yld_hdr

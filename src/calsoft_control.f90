@@ -12,14 +12,14 @@
       
       implicit none
       
-      integer :: ireg        !none      |counter
-      integer :: ilum        !none      |counter
-      integer :: icvmax      !          |
-      integer :: nyskip      !          |
-      integer :: ihru        !none      |counter
-      integer :: isdh        !none      |counter
-      integer :: idb         !          |   
-      integer :: iord        !none      |counter 
+      integer :: ireg = 0    !none      |counter
+      integer :: ilum = 0    !none      |counter
+      integer :: icvmax = 0  !          |
+      integer :: nyskip = 0  !          |
+      integer :: ihru = 0    !none      |counter
+      integer :: isdh = 0    !none      |counter
+      integer :: idb = 0     !          |   
+      integer :: iord = 0    !none      |counter 
       
       nyskip = pco%nyskip
       pco = pco_init
@@ -40,7 +40,7 @@
         end if
  
         !print calibrated hydrology for hru_lte
-		do ireg = 1, db_mx%lsu_reg
+        do ireg = 1, db_mx%lsu_reg
            do ilum = 1, region(ireg)%nlum
             lscal(ireg)%lum(ilum)%meas%srr = lscal(ireg)%lum(ilum)%precip_aa_sav * lscal(ireg)%lum(ilum)%meas%srr
             lscal(ireg)%lum(ilum)%meas%lfr = lscal(ireg)%lum(ilum)%precip_aa_sav * lscal(ireg)%lum(ilum)%meas%lfr
@@ -51,7 +51,7 @@
             !write (5000,500) lscal(ireg)%lum(ilum)%name, lscal(ireg)%lum(ilum)%ha, lscal(ireg)%lum(ilum)%nbyr,  &
             !        lscal(ireg)%lum(ilum)%precip_aa_sav, lscal(ireg)%lum(ilum)%meas, lscal(ireg)%lum(ilum)%aa,  &
             !        lscal(ireg)%lum(ilum)%prm
-		  end do
+          end do
         end do  
 
       end if
@@ -60,8 +60,8 @@
       if (cal_codes%hyd_hrul == "y") then
         call caltsoft_hyd
         !print calibrated hydrology for hru_lte
-		do ireg = 1, db_mx%lsu_reg
-		  do ilum = 1, lscalt(ireg)%lum_num
+        do ireg = 1, db_mx%lsu_reg
+          do ilum = 1, lscalt(ireg)%lum_num
             lscalt(ireg)%lum(ilum)%meas%srr = lscalt(ireg)%lum(ilum)%precip_aa_sav * lscalt(ireg)%lum(ilum)%meas%srr
             lscalt(ireg)%lum(ilum)%meas%lfr = lscalt(ireg)%lum(ilum)%precip_aa_sav * lscalt(ireg)%lum(ilum)%meas%lfr
             lscalt(ireg)%lum(ilum)%meas%pcr = lscalt(ireg)%lum(ilum)%precip_aa_sav * lscalt(ireg)%lum(ilum)%meas%pcr
@@ -70,21 +70,21 @@
             
             !write (5000,500) lscalt(ireg)%name, lscalt(ireg)%lum(ilum)%ha, lscalt(ireg)%lum(ilum)%nbyr,           &
             !        lscalt(ireg)%lum(ilum)%precip_aa_sav, lscalt(ireg)%lum(ilum)%meas, lscalt(ireg)%lum(ilum)%aa, &
-            !        lscalt(ireg)%lum(ilum)%prm	
-		  end do
+            !        lscalt(ireg)%lum(ilum)%prm    
+          end do
         end do  
 
-	    do isdh = 1, sp_ob%hru_lte
-	      idb = hlt(isdh)%props
-		  write (4999,*) hlt(isdh)%name, hlt_db(idb)%dakm2, hlt(isdh)%cn2, hlt(isdh)%cn3_swf, hlt_db(idb)%tc,       &
-		    hlt_db(idb)%soildep, hlt(isdh)%perco, hlt_db(isdh)%slope, hlt_db(idb)%slopelen,                         &
-		    hlt(isdh)%etco, hlt_db(idb)%sy, hlt_db(idb)%abf, hlt(idb)%revapc,                                       &
-		    hlt_db(idb)%percc, hlt_db(idb)%sw, hlt_db(idb)%gw, hlt_db(idb)%gwflow,                                  &
-		    hlt_db(idb)%gwdeep, hlt_db(idb)%snow, hlt_db(idb)%xlat, hlt_db(idb)%text,                               &
-		    hlt_db(idb)%tropical, hlt_db(idb)%igrow1, hlt_db(idb)%igrow2, hlt_db(idb)%plant, hlt(isdh)%stress,      &
-		    hlt_db(idb)%ipet, hlt_db(idb)%irr, hlt_db(idb)%irrsrc, hlt_db(idb)%tdrain,                              &
+        do isdh = 1, sp_ob%hru_lte
+          idb = hlt(isdh)%props
+          write (4999,*) hlt(isdh)%name, hlt_db(idb)%dakm2, hlt(isdh)%cn2, hlt(isdh)%cn3_swf, hlt_db(idb)%tc,       &
+            hlt_db(idb)%soildep, hlt(isdh)%perco, hlt_db(isdh)%slope, hlt_db(idb)%slopelen,                         &
+            hlt(isdh)%etco, hlt_db(idb)%sy, hlt_db(idb)%abf, hlt(idb)%revapc,                                       &
+            hlt_db(idb)%percc, hlt_db(idb)%sw, hlt_db(idb)%gw, hlt_db(idb)%gwflow,                                  &
+            hlt_db(idb)%gwdeep, hlt_db(idb)%snow, hlt_db(idb)%xlat, hlt_db(idb)%text,                               &
+            hlt_db(idb)%tropical, hlt_db(idb)%igrow1, hlt_db(idb)%igrow2, hlt_db(idb)%plant, hlt(isdh)%stress,      &
+            hlt_db(idb)%ipet, hlt_db(idb)%irr, hlt_db(idb)%irrsrc, hlt_db(idb)%tdrain,                              &
             hlt_db(idb)%uslek, hlt_db(idb)%uslec, hlt_db(idb)%uslep, hlt_db(idb)%uslels
-	    end do
+        end do
       end if
         
       !calibrate plant growth
@@ -98,9 +98,9 @@
       end if 
 
       !calibrate channel sediment 
-      if (cal_codes%chsed == "y") then
-        call calsoft_chsed
-      end if
+      !if (cal_codes%chsed == "y") then
+      !  call calsoft_chsed
+      !end if
 
       if (cal_codes%chsed == "y") then
         do ireg = 1, db_mx%ch_reg
@@ -160,7 +160,7 @@
         end do
       end if      ! channel sediment parms
 
-  500 format (a16,f12.3,i12,f12.3,2(1x,a16,10f12.3),10f12.3)
+!*** tu Wunused-label:   500 format (a16,f12.3,i12,f12.3,2(1x,a16,10f12.3),10f12.3)
   503 format (2a16,f12.5,a)
       
       return

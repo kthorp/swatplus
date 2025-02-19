@@ -1,7 +1,7 @@
       subroutine cal_parm_select (ielem, ly, chg_parm, chg_typ, chg_val, absmin, absmax, num_db)
       
 !!    ~ ~ ~ PURPOSE ~ ~ ~
-!!    this subroutine finds the current paramter value based on 
+!!    this subroutine finds the current parameter value based on 
 !!    user defined change
 
 !!    ~ ~ ~ INCOMING VARIABLES ~ ~ ~
@@ -34,6 +34,8 @@
       use hydrograph_module
       use pesticide_data_module
       use plant_module
+      use plant_data_module
+      use gwflow_module
       
       implicit none
 
@@ -45,15 +47,16 @@
       integer, intent (in) :: ielem                         !                | 
       integer, intent (in) :: num_db                        !                | 
       integer, intent (in) :: ly                            !                |
-      integer :: jj                                         !                |soil layer counter
-      integer :: ipl                                        !                |soil layer counter
-      integer :: ihru                                       !                |hru counter
+      integer :: jj = 0                                     !                |soil layer counter
+      integer :: ipl = 0                                    !                |soil layer counter
+      integer :: ihru = 0                                   !                |hru counter
+      integer :: icell                                      !                |gwflow cell counter (rtb)
       real :: exp                                           !                | 
-      real :: c_val                                         !                | 
-      real :: abmax                                         !                | 
+      real :: c_val = 0.                                    !                | 
+      real :: abmax = 0.                                    !                | 
       real :: chg_par                                       !variable        |new parameter value
-      real :: perc_ln_func                                  !none       |function to convert perco to perc_lim
-      real :: rock                                          !                | 
+      real :: perc_ln_func = 0.                             !none       |function to convert perco to perc_lim
+      real :: rock = 0.                                     !                | 
 
       select case (chg_parm)
 
@@ -78,12 +81,16 @@
         hru(ielem)%lumv%usle_p = chg_par (hru(ielem)%lumv%usle_p,         &
                           chg_typ, chg_val, absmin, absmax)
         
+      case ("usle_c")
+        pldb(ielem)%usle_c = chg_par (pldb(ielem)%usle_c,         &
+                          chg_typ, chg_val, absmin, absmax)
+        
       case ("ovn")
         hru(ielem)%luse%ovn = chg_par (hru(ielem)%luse%ovn,               &
                           chg_typ, chg_val, absmin, absmax)
         
       case ("elev")
-        hru(ielem)%topo%elev = chg_par (hru(ielem)%topo%elev,             &
+        hru(ielem)%topo%elev = chg_par (hru(ielem)%topo%elev,             & 
                           chg_typ, chg_val, absmin, absmax)
         
       case ("slope")
@@ -329,8 +336,26 @@
       case ("ph")
            soil(ielem)%ly(ly)%ph = chg_par(soil(ielem)%ly(ly)%ph,        &
                          chg_typ, chg_val, absmin, absmax)
+      case ("cmn_h")
+        hru(ielem)%nut%cmn = chg_par(hru(ielem)%nut%cmn,           &
+                         chg_typ, chg_val, absmin, absmax)
         
+      case ("nperco_h")
+        hru(ielem)%nut%nperco = chg_par(hru(ielem)%nut%nperco,                  &
+                         chg_typ, chg_val, absmin, absmax)
        
+      case ("pperco_h")
+        hru(ielem)%nut%pperco = chg_par(hru(ielem)%nut%pperco,                  &
+                         chg_typ, chg_val, absmin, absmax)
+      case ("phoskd_h")
+        hru(ielem)%nut%phoskd = chg_par(hru(ielem)%nut%phoskd,                  &
+                         chg_typ, chg_val, absmin, absmax)
+      case ("psp_h")
+        hru(ielem)%nut%psp = chg_par(hru(ielem)%nut%psp,                        &
+                         chg_typ, chg_val, absmin, absmax)
+      case ("nperco_lchtile_h")
+        hru(ielem)%nut%nperco_lchtile = chg_par(hru(ielem)%nut%nperco_lchtile,  &
+                         chg_typ, chg_val, absmin, absmax)                      
        !! BSN
       case ("plaps")
         bsn_prm%plaps = chg_par(bsn_prm%plaps,                         &
@@ -427,8 +452,8 @@
         bsn_prm%n_updis = chg_par(bsn_prm%n_updis,                      &
                          chg_typ, chg_val, absmin, absmax)
         
-      case ("p_updis")
-        bsn_prm%p_updis = chg_par(bsn_prm%p_updis,                      &
+      case ("rsd_covco")
+        bsn_prm%rsd_covco = chg_par(bsn_prm%rsd_covco,                      &
                          chg_typ, chg_val, absmin, absmax)
         
       case ("dorm_hr")
@@ -436,6 +461,9 @@
                          chg_typ, chg_val, absmin, absmax)
 
 !!     SWQ
+      case ("mumax")
+          ch_nut(ielem)%mumax = chg_par(ch_nut(ielem)%mumax,                &
+                         chg_typ, chg_val, absmin, absmax)
       case ("rs1")
           ch_nut(ielem)%rs1 = chg_par(ch_nut(ielem)%rs1,                &
                          chg_typ, chg_val, absmin, absmax)
@@ -609,20 +637,16 @@
             sd_ch(ielem)%chk = chg_par(sd_ch(ielem)%chk,                  &
                          chg_typ, chg_val, absmin, absmax)
         
-         case ("cherod")
-            sd_ch(ielem)%cherod = chg_par(sd_ch(ielem)%cherod,            &
+         case ("bank_exp")
+            sd_ch(ielem)%bank_exp = chg_par(sd_ch(ielem)%bank_exp,            &
                          chg_typ, chg_val, absmin, absmax)
         
          case ("cov")
             sd_ch(ielem)%cov = chg_par(sd_ch(ielem)%cov,                  &
                         chg_typ, chg_val, absmin, absmax)
             
-        ! case ("wd_rto")
-        !    sd_ch(ielem)%wd_rto = chg_par(sd_ch(ielem)%wd_rto,            &
-        !                 chg_typ, chg_val, absmin, absmax)
-        
-         case ("flood_sedfrac")
-            sd_ch(ielem)%chseq = chg_par(sd_ch(ielem)%chseq,              &
+         case ("vcr_coef")
+            sd_ch(ielem)%vcr_coef = chg_par(sd_ch(ielem)%vcr_coef,              &
                          chg_typ, chg_val, absmin, absmax)
         
          case ("d50")
@@ -710,8 +734,8 @@
             sd_ch(ielem)%arc_len_fr = chg_par(sd_ch(ielem)%arc_len_fr,            &
                          chg_typ, chg_val, absmin, absmax)
         
-         case ("part_size")
-            sd_ch(ielem)%part_size = chg_par(sd_ch(ielem)%part_size,            &
+         case ("bed_exp")
+            sd_ch(ielem)%bed_exp = chg_par(sd_ch(ielem)%bed_exp,            &
                          chg_typ, chg_val, absmin, absmax)
         
          case ("wash_bed_fr")
@@ -738,7 +762,18 @@
          case ("nsed")
            res_prm(ielem)%sed%nsed = chg_par(res_prm(ielem)%sed%nsed,           &
                          chg_typ, chg_val, absmin, absmax)
+         case ("res_d50")
+           res_prm(ielem)%sed%d50 = chg_par(res_prm(ielem)%sed%d50,           &
+                         chg_typ, chg_val, absmin, absmax)
+           !! d50 -micro meters
+           res_prm(ielem)%sed_stlr_co = exp(-0.184 * res_prm(ielem)%sed%d50)
            
+         case ("soln_stl_fr")
+           res_prm(ielem)%soln_stl_fr = chg_par(res_prm(ielem)%soln_stl_fr,           &
+                         chg_typ, chg_val, absmin, absmax)
+         case ("solp_stl_fr")
+           res_prm(ielem)%solp_stl_fr = chg_par(res_prm(ielem)%solp_stl_fr,           &
+                         chg_typ, chg_val, absmin, absmax)
          case ("sed_stlr")
            res_prm(ielem)%sed%sed_stlr = chg_par(res_prm(ielem)%sed%sed_stlr,           &
                          chg_typ, chg_val, absmin, absmax)
@@ -948,6 +983,47 @@
             
         case ("uslels_lte")
             hlt_db(ielem)%uslels = chg_par (hlt_db(ielem)%uslels, chg_typ, chg_val, absmin, absmax)
+
+
+        !!gwflow (rtb)
+         case ("aquifer_K")
+                    if(bsn_cc%gwflow.eq.1) then
+                      gw_state(ielem)%hydc = chg_par(gw_state(ielem)%hydc, chg_typ, chg_val, absmin, absmax)        
+                        endif
+                        
+                 case ("aquifer_Sy")
+                    if(bsn_cc%gwflow.eq.1) then
+                      gw_state(ielem)%spyd = chg_par(gw_state(ielem)%spyd, chg_typ, chg_val, absmin, absmax)    
+                    endif
+                            
+                 case ("aquifer_delay")
+                    if(bsn_cc%gwflow.eq.1) then
+                      gw_delay(ielem) = chg_par(gw_delay(ielem), chg_typ, chg_val, absmin, absmax)
+            endif
+                            
+                 case ("aquifer_exdp")
+                    if(bsn_cc%gwflow.eq.1) then
+                      gw_state(ielem)%exdp = chg_par(gw_state(ielem)%exdp, chg_typ, chg_val, absmin, absmax)        
+                      endif 
+                            
+                 case ("stream_K")
+                    if(bsn_cc%gwflow.eq.1) then
+                      do icell=1,gw_chan_info(ielem)%ncon !loop through cells connected to channel
+                            gw_chan_info(ielem)%hydc(icell) = chg_par(gw_chan_info(ielem)%hydc(icell), chg_typ, chg_val, absmin, absmax)
+                          enddo
+                    endif
+                            
+                 case ("stream_thk")
+                    if(bsn_cc%gwflow.eq.1) then
+                      do icell=1,gw_chan_info(ielem)%ncon !loop through cells connected to channel
+                            gw_chan_info(ielem)%thck(icell) = chg_par(gw_chan_info(ielem)%thck(icell), chg_typ, chg_val, absmin, absmax)
+                          enddo
+                    endif
+                            
+                 case ("stream_bed")
+                    if(bsn_cc%gwflow.eq.1) then
+                      gw_bed_change = chg_par(gw_bed_change, chg_typ, chg_val, absmin, absmax)      
+                    endif
 
         !! initial soil properties
         case ("lab_p")

@@ -8,7 +8,7 @@
 !!    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 !!    pup1(:)   |none           |1st shape parameter for plant P uptake
 !!                                |equation
-!!    pup2(:)   |none           |2st shape parameter for plant P uptake
+!!    pup2(:)   |none           |2nd shape parameter for plant P uptake
 !!                                |equation
 !!    ihru        |none           |HRU number
 !!    ~ ~ ~ OUTGOING VARIABLES ~ ~ ~
@@ -36,12 +36,12 @@
 
       implicit none
 
-      integer :: j           !none      |hru number
-      integer :: l           !none      |counter (soil layer)
-      real :: root_depth     !mm        |root depth
-      real :: soil_depth     !mm        |soil layer depth
-      real :: uapl           !kg P/ha   |amount of phosphorus removed from layer
-      real :: upmx           !kg P/ha   |maximum amount of phosphorus that can be
+      integer :: j = 0       !none      |hru number
+      integer :: l = 0       !none      |counter (soil layer)
+      real :: root_depth = 0.  !mm        |root depth
+      real :: soil_depth = 0.  !mm        |soil layer depth
+      real :: uapl = 0.      !kg P/ha   |amount of phosphorus removed from layer
+      real :: upmx = 0.      !kg P/ha   |maximum amount of phosphorus that can be
                              !          |removed from the soil layer
      
       j = ihru

@@ -10,8 +10,8 @@
       
       implicit none 
       
-      integer :: j              !none               |HRU number
-      integer :: idp            !none               |plant number from plants.plt
+      integer :: j = 0          !none               |HRU number
+      integer :: idp = 0        !none               |plant number from plants.plt
  
       j = ihru
         
@@ -40,7 +40,7 @@
 
           call pl_seed_gro(j)
           
-          call pl_partition(j)
+          call pl_partition(j, 0)
 
         end if
         

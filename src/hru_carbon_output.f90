@@ -14,8 +14,8 @@
       implicit none
       
       integer, intent (in) :: ihru             !            |
-      integer :: j
-      integer :: iob
+      integer :: j = 0
+      integer :: iob = 0
                          
 !!    ~ ~ ~ PURPOSE ~ ~ ~
 !!    this subroutine outputs HRU variables on daily, monthly and annual time steps
@@ -57,7 +57,7 @@
           write (4521,*) time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hsc_m(j)    !! soil carbon gain/loss
           write (4531,*) time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hrc_m(j)    !! residue carbon gain/loss
           write (4541,*) time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hpc_m(j)    !! plant carbon gain/loss
-          write (4551,*) time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hscf_m(j)     !! soil transformations
+          write (4551,*) time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hscf_m(j)   !! soil transformations
 
           if (pco%csvout == "y") then
             write (4525,'(*(G0.3,:","))') time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hsc_m(j)    !! soil carbon gain/loss
@@ -66,12 +66,11 @@
             write (4555,'(*(G0.3,:","))') time%day, time%mo, time%day_mo, time%yrc, j, ob(iob)%gis_id, ob(iob)%name, hscf_m(j)   !! soil transformations
 
           end if
-           
-          hsc_m(j) = hscz
-          hrc_m(j) = hrcz
-          hpc_m(j) = hpcz
-          hscf_m(j) = hscfz
         end if
+        hsc_m(j) = hscz
+        hrc_m(j) = hrcz
+        hpc_m(j) = hpcz
+        hscf_m(j) = hscfz
       end if      ! if end_mo 
         
       !! check end of year
@@ -96,6 +95,10 @@
 
           end if
         end if
+        hsc_y(j) = hscz
+        hrc_y(j) = hrcz
+        hpc_y(j) = hpcz
+        hscf_y(j) = hscfz
       end if      ! if end_yr
         
       !! average annual print
@@ -126,12 +129,12 @@
 
       return
       
-100   format (4i6,2i8,2x,a,40f12.3)
-101   format (4i6,2i8,2x,a,24f12.3)
-102   format (4i6,2i8,2x,a,24f12.3)
-103   format (4i6,i8,4x,a,5x,4f12.3)
-104   format (4i6,2i8,2x,a8,4f12.3,23f17.3)
-105   format (4i6,2i8,2x,a8,8f17.3)
-106   format (4i6,2i8,2x,a8,29f17.3)
+!*** tu Wunused-label: 100   format (4i6,2i8,2x,a,40f12.3)
+!*** tu Wunused-label: 101   format (4i6,2i8,2x,a,24f12.3)
+!*** tu Wunused-label: 102   format (4i6,2i8,2x,a,24f12.3)
+!*** tu Wunused-label: 103   format (4i6,i8,4x,a,5x,4f12.3)
+!*** tu Wunused-label: 104   format (4i6,2i8,2x,a8,4f12.3,23f17.3)
+!*** tu Wunused-label: 105   format (4i6,2i8,2x,a8,8f17.3)
+!*** tu Wunused-label: 106   format (4i6,2i8,2x,a8,29f17.3)
        
       end subroutine hru_carbon_output

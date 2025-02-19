@@ -7,35 +7,42 @@
       use hru_module, only : hru
       use soil_module
       use plant_module
+      use plant_data_module
       use time_module
+      use reservoir_module
       use climate_module, only : pcp, tmp
+      
+      use landuse_data_module
       
       implicit none
            
-      character(len=16) :: chg_parm                           !                |               
-      character(len=16) :: chg_typ                            !variable        |type of change (absval, abschg, pctchg)
-      character(len=1) :: cond_met                            !                |       
-      character(len=1) :: pl_find                             !                |       
-      integer :: lyr                                          !none            |counter
-      integer :: iyr                                          !                |
-      integer :: ichg_par                                     !none            |counter
-      integer :: ispu                                         !none            |counter
-      integer :: ielem                                        !none            |counter
-      real :: chg_val                                         !                |
-      real :: absmin                                          !                |minimum range for variable
-      real :: absmax                                          !                |maximum change for variable
-      integer :: num_db                                       !                |
-      integer :: ic                                           !none            |counter
-      integer :: ipg                                          !                |
-      integer :: ipl                                          !                |
-      integer :: iyear                                        !none            |counter
-      real :: val_cur                                         !variable        |current parameter value
+      character(len=25) :: chg_parm = ""                      !                |               
+      character(len=16) :: chg_typ = ""                       !variable        |type of change (absval, abschg, pctchg)
+      character(len=1) :: cond_met = ""                       !                |       
+      character(len=1) :: pl_find = ""                        !                |       
+      integer :: lyr = 0                                      !none            |counter
+      integer :: iyr = 0                                      !                |
+      integer :: ichg_par = 0                                 !none            |counter
+      integer :: ispu = 0                                     !none            |counter
+      integer :: ielem = 0                                    !none            |counter
+      real :: chg_val = 0.                                    !                |
+      real :: absmin = 0.                                     !                |minimum range for variable
+      real :: absmax = 0.                                     !                |maximum change for variable
+      integer :: num_db = 0                                   !                |
+      integer :: ic = 0                                       !none            |counter
+      integer :: ipg = 0                                      !                |
+      integer :: ipl = 0                                      !                |
+      integer :: iyear = 0                                    !none            |counter
+      real :: val_cur = 0.                                    !variable        |current parameter value
                                                               !                |the standard temperature (20 degrees C)
       real :: chg_par                                         !variable        |type of change (absval, abschg, pctchg)
-      integer :: iday                                         !none            |counter
-      integer :: ig                                           !                |
-      integer :: nvar                                         !                |number of plant cal variables (1=lai_pot, 2=harv_idx)
-      integer :: cal_lyr1, cal_lyr2, iplant
+      integer :: iday = 0                                     !none            |counter
+      integer :: ig = 0                                       !                |
+      integer :: nvar = 0                                     !                |number of plant cal variables (1=lai_pot, 2=harv_idx)
+      integer :: cal_lyr1 = 0
+      integer :: cal_lyr2 = 0
+      integer :: iplant = 0
+      integer :: icom = 0
          
       do ichg_par = 1, db_mx%cal_upd
         do ispu = 1, cal_upd(ichg_par)%num_elem
@@ -51,6 +58,11 @@
           cond_met = "y"
           do ic = 1, cal_upd(ichg_par)%conds
             select case (cal_upd(ichg_par)%cond(ic)%var)
+            case ("res_pvol")
+              if (res_ob(ielem)%pvol <= 10000 * cal_upd(ichg_par)%val1 .or.     &
+                      res_ob(ielem)%pvol >= 10000 * cal_upd(ichg_par)%val2) then
+                cond_met = "n"
+              end if    
             case ("hsg")
               if (cal_upd(ichg_par)%cond(ic)%targc /= soil(ielem)%hydgrp) then
                 cond_met = "n"
@@ -72,18 +84,35 @@
                   if (pl_find == "n") cond_met = "n"
                   exit
               end do
+            case ("pl_class")
+                
+              do ipl = 1, pcom(ielem)%npl
+                icom = pcom(ielem)%pcomdb
+                if (cal_upd(ichg_par)%cond(ic)%targc /= lum(icom)%cal_group) then 
+                  cond_met = "n"
+                end if
+                exit
+              end do
+              
+              !do ipl = 1, pcom(ielem)%npl
+                !icom = pcom(ielem)%pcomdb
+                !idp = pcomdb(icom)%pl(ipl)%db_num
+                !pl_find = "n"
+                !if (cal_upd(ichg_par)%cond(ic)%targc == pl_class(idp)) then
+                  !pl_find = "y"
+                !end if
+                !if (pl_find == "n") cond_met = "n"
+                !exit
+              !end do
+              
             case ("landuse")    !for hru
               if (cal_upd(ichg_par)%cond(ic)%targc /= hru(ielem)%land_use_mgt_c) then 
                 cond_met = "n"
                 exit
               end if
-            case ("region")     !for hru    
-              if (cal_upd(ichg_par)%cond(ic)%targc /= hru(ielem)%region) then 
-                cond_met = "n"
-                exit
-              end if
-            case ("region_lte")     !for hru    
-              if (cal_upd(ichg_par)%cond(ic)%targc /= hru(ielem)%region) then 
+              
+            case ("cal_group")     !for hru    
+              if (cal_upd(ichg_par)%cond(ic)%targc /= hru(ielem)%cal_group) then 
                 cond_met = "n"
                 exit
               end if

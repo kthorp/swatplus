@@ -13,15 +13,15 @@
       implicit none 
 
       integer, intent (inout) :: iwallo     !water allocation object number
-      integer :: idmd                       !water demand object number
-      integer :: isrc                       !source object number
-      integer :: j                          !hru number
-      integer :: jj                         !variable for passing
-      integer :: irec                       !recall id
-      integer :: dum
-      real :: irr_mm                        !mm     |irrigation applied
-      real :: div_total                     !m3     |cumulative available diversion water
-      real :: div_daily                     !m3     |daily water diverted for irrigation
+      integer :: idmd = 0                   !water demand object number
+      integer :: isrc = 0                   !source object number
+      integer :: j = 0                      !hru number
+      integer :: jj = 0                     !variable for passing
+      integer :: irec = 0                   !recall id
+      integer :: dum = 0
+      real :: irr_mm = 0.                   !mm     |irrigation applied
+      real :: div_total = 0.                !m3     |cumulative available diversion water
+      real :: div_daily = 0.                !m3     |daily water diverted for irrigation
       
 
       !! zero demand, withdrawal, and unmet for entire allocation object
@@ -115,7 +115,7 @@
               if(cs_db%num_salts > 0) then
                 jj = idmd !to avoid a compiler warning
                 call salt_irrig(iwallo,jj,j)
-			  endif
+              endif
               !rtb cs: irrigation constituent mass accounting
               if(cs_db%num_cs > 0) then
                 jj = idmd !to avoid a compiler warning
@@ -124,7 +124,7 @@
               
               if (pco%mgtout == "y") then
                 write (2612, *) j, time%yrc, time%mo, time%day_mo, "        ", "IRRIGATE", phubase(j),  &
-                  pcom(j)%plcur(1)%phuacc, soil(j)%sw, pl_mass(j)%tot(1)%m, rsd1(j)%tot(1)%m,           &
+                  pcom(j)%plcur(1)%phuacc, soil(j)%sw, pl_mass(j)%tot(1)%m, soil1(j)%rsd(1)%m,           &
                   sol_sumno3(j), sol_sumsolp(j), irrig(j)%applied
               end if
             end if

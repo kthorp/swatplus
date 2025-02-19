@@ -9,13 +9,13 @@
       
       implicit none
       
-      integer :: ilsu           !none       |counter
-      integer :: ielem          !none       |counter
-      integer :: ihru           !none       |counter 
-      integer :: iob            !none       |counter 
-      real :: const             !           |  
-      real :: sw_init           !           |
-      real :: sno_init          !           |
+      integer :: ilsu = 0       !none       |counter
+      integer :: ielem = 0      !none       |counter
+      integer :: ihru = 0       !none       |counter 
+      integer :: iob = 0        !none       |counter 
+      real :: const = 0.        !           |  
+      real :: sw_init = 0.      !           |
+      real :: sno_init = 0.     !           |
           
       !! zero daily outputs before summing
       do ilsu = 1, db_mx%lsu_out
@@ -260,6 +260,6 @@
 102   format (1x,4i6,i7,a,2x,a,40f12.3)
 !103   format (4i6,i8,a,2x,a,6f12.3,29f17.3)
 103   format (4i6,i8,a,2x,a,4f12.3,23f17.3)
-104   format (4i6,i8,a,2x,a,6f12.3,29f17.3)
+!*** tu Wunused-label: 104   format (4i6,i8,a,2x,a,6f12.3,29f17.3)
        
       end subroutine lsu_output

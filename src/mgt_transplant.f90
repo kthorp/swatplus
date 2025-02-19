@@ -8,11 +8,11 @@
       implicit none
       
       integer, intent (in) :: itrans
-      integer :: j                   !none       |counter
-      integer :: icom                !none       |plant community counter 
-      integer :: idp                 !none       |plant database number - plants.plt
-      real :: xx
-      real :: laimx_pop
+      integer :: j = 0               !none       |counter
+      integer :: icom = 0            !none       |plant community counter 
+      integer :: idp = 0             !none       |plant database number - plants.plt
+      real :: xx = 0.
+      real :: laimx_pop = 0.
 
       j = ihru
       icom = hru(j)%plant_cov
@@ -53,7 +53,7 @@
       !! initialize plant mass
       call pl_root_gro(j)
       call pl_seed_gro(j)
-      call pl_partition(j)
+      call pl_partition(j, 1)
 
       return
       end subroutine mgt_transplant

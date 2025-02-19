@@ -2,21 +2,20 @@
     
       implicit none
       
-      character(len=16), dimension (:), allocatable :: plts_bsn     !none      |plant names simulated in current run
-      character(len=16), dimension (:), allocatable :: plants_bsn   !none      |plant names simulated in current run - final
-     
+      character(len=40), dimension (:), allocatable :: plts_bsn     !none      |plant names simulated in current run
+      character(len=25), dimension(:), allocatable :: pl_class      !none      |plant class - row crop, tree, grass, etc
       type plant_db
-        character(len=40) :: plantnm     !none              |crop name
-        character(len=18) :: typ         !none              |plant category
+        character(len=40) :: plantnm = ""  !none              |crop name
+        character(len=18) :: typ = ""    !none              |plant category
                                          !                  |warm_annual
                                          !                  |cold_annual
                                          !                  |warm_annual_tuber
                                          !                  |cold_annual_tuber
                                          !                  |perennial
-        character(len=18) :: trig        !none              |phenology trigger
+        character(len=18) :: trig = ""   !none              |phenology trigger
                                          !                  |moisture_gro
                                          !                  |temp_gro
-        real :: nfix_co                  !none              |n fixation coefficient (0.5 legume; 0 non-legume)
+        real :: nfix_co = 0.             !none              |n fixation coefficient (0.5 legume; 0 non-legume)
         integer :: days_mat = 110        !days              |days to maturity - if zero use hu for entire growing season
         real :: bio_e = 15.0             !(kg/ha/(MJ/m**2)  |biomass-energy ratio
         real :: hvsti = 0.76             !(kg/ha)/(kg/ha)   |harvest index: crop yield/aboveground biomass
@@ -48,7 +47,7 @@
         real :: gsi = 0.002              !m/s               |maximum stomatal conductance
         real :: vpdfr = 4.               !kPa               |vapor pressure deficit at which GMAXFR is valid
         real :: gmaxfr = 0.75            !none              |fraction of max stomatal conductance that is 
-                                         !                    achieved at the vapor pressue deficit defined by VPDFR
+                                         !                    achieved at the vapor pressure deficit defined by VPDFR
         real :: wavp = 8.                !none              |rate of decline in radiation use efficiency
         real :: co2hi = 660.             !uL CO2/L air      |CO2 concentration higher than the ambient corresponding
                                          !                    to the 2nd point on radiation use efficiency curve             
@@ -96,7 +95,7 @@
         real :: pup1 = 0.        !none      |1st shape parameter for plant P uptake equation
         real :: pup2 = 0.        !none      |2nd shape parameter for plant P uptake equation
         real :: gmaxfr = 0.      !none      |fraction of max stomatal conductance that is 
-                                 !            achieved at the vapor pressue deficit defined by VPDFR
+                                 !            achieved at the vapor pressure deficit defined by VPDFR
         real :: vpdfr = 0.       !kPa       |vapor pressure deficit at which GMAXFR is valid
         real :: cvm = 0.         !frac      |fraction of the maximum leaf area index corresponding
                                  !            to the second point of the optimal leaf area dev curve
@@ -134,7 +133,7 @@
         real :: bioms = 0.                  !kg/ha          |land cover/crop biomass
         real :: phuacc = 0.                 !frac           |frac of plant heat unit acc.
         real :: fr_yrmat = 0.05             !years          |fraction of current year of growth to years to maturity 
-        real :: pop                         !plants/m^2     |plant population 
+        real :: pop = 0.                    !plants/m^2     |plant population 
       end type plant_transplant_db
       type (plant_transplant_db), dimension(:), allocatable :: transpl
     

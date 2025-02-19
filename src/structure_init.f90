@@ -6,13 +6,13 @@
       
       implicit none
       
-      integer :: j                   !none       |counter
-      integer :: ilum                !none       |counter 
+      integer :: j = 0               !none       |counter
+      integer :: ilum = 0            !none       |counter 
       
       do j = 1, sp_ob%hru
         ilum = hru(j)%land_use_mgt
            
-        !! set parameters for structural land use/managment
+        !! set parameters for structural land use/management
         if (lum(ilum)%tiledrain /= "null") then
           call structure_set_parms("tiledrain       ", lum_str(ilum)%tiledrain, j)
         end if

@@ -16,40 +16,40 @@
       implicit none     
     
       integer, intent (in) :: ts_int  !none          |number of time steps in a day
-      real :: ts_hr                   !hours         |time step
+      real :: ts_hr = 0.              !hours         |time step
       
       !real :: rcharea                !m^2           |cross-sectional area of flow
-      integer :: isd_db               !              |
-      real :: erode_btm               !cm            |
-      real :: erode_bank              !cm            |meander cut on one side
-      real :: erode_bank_cut          !cm            |widening caused by downcutting (both sides)
-      real :: deg_btm                 !tons          |bottom erosion
-      real :: deg_bank                !tons          |bank erosion
-      real :: sedout                  !mg		     |sediment out of waterway channel
-      real :: washld                  !tons          |wash load  
-      real :: bedld                   !tons          |bed load
-      real :: dep                     !tons          |deposition
-      real :: hc_sed                  !tons          |headcut erosion 
-      real :: e_btm                   !cm            |erosion on bottom of channel at each time step
-      real :: dep_btm                 !cm            |deposition on bottom of channel
-      real :: pr_ratio                !              |
-      real  :: tw                     !              |
-      real :: shear_btm_cr            !              |
-      real :: shear_btm               !              |
-      real :: shear_bank_cr           !              | 
-      real :: qmm                     !              | 
-      real :: qh                      !              | 
-      real :: hc                      !m/yr          |head cut advance
+      integer :: isd_db = 0           !              |
+      real :: erode_btm = 0.          !cm            |
+      real :: erode_bank = 0.         !cm            |meander cut on one side
+      real :: erode_bank_cut = 0.     !cm            |widening caused by downcutting (both sides)
+      real :: deg_btm = 0.            !tons          |bottom erosion
+      real :: deg_bank = 0.           !tons          |bank erosion
+      real :: sedout = 0.             !mg            |sediment out of waterway channel
+      real :: washld = 0.             !tons          |wash load  
+      real :: bedld = 0.              !tons          |bed load
+      real :: dep = 0.                !tons          |deposition
+      real :: hc_sed = 0.             !tons          |headcut erosion 
+      real :: e_btm = 0.              !cm            |erosion on bottom of channel at each time step
+      real :: dep_btm = 0.            !cm            |deposition on bottom of channel
+      real :: pr_ratio = 0.           !              |
+      real  :: tw = 0.                !              |
+      real :: shear_btm_cr = 0.       !              |
+      real :: shear_btm = 0.          !              |
+      real :: shear_bank_cr = 0.      !              | 
+      real :: qmm = 0.                !              | 
+      real :: qh = 0.                 !              | 
+      real :: hc = 0.                 !m/yr          |head cut advance
       integer :: max                  !              |
-      real :: chns                    !              |
-      integer :: ihval                !none          |counter 
-      real :: perim_bed               !              |
-      real :: perim_bank              !              |
-      real :: s_bank                  !              |
-      real :: shear_bank              !              |
-      real :: shear_bank_adj          !              | 
-      real :: e_bank                  !              | 
-      real :: bf_flow                 !m3/s          |bankfull flow rate * adjustment factor
+      real :: chns = 0.               !              |
+      integer :: ihval = 0            !none          |counter 
+      real :: perim_bed = 0.          !              |
+      real :: perim_bank = 0.         !              |
+      real :: s_bank = 0.             !              |
+      real :: shear_bank = 0.         !              |
+      real :: shear_bank_adj = 0.     !              | 
+      real :: e_bank = 0.             !              | 
+      real :: bf_flow = 0.            !m3/s          |bankfull flow rate * adjustment factor
            
       ich = isdch
       isd_db = sd_dat(ich)%hyd
@@ -115,7 +115,7 @@
           shear_bank_cr = 0.493 * 10. ** (.0182 * sd_ch(ich)%ch_clay)
           e_bank = 0.
           if (shear_bank_adj > shear_bank_cr) then
-            e_bank = ts_hr * sd_ch(ich)%cherod * (shear_bank_adj - shear_bank_cr)    !! cm = hr * cm/hr/Pa * Pa
+            !e_bank = ts_hr * sd_ch(ich)%cherod * (shear_bank_adj - shear_bank_cr)    !! cm = hr * cm/hr/Pa * Pa
             erode_bank = erode_bank + e_bank
             !! calc mass of sediment eroded -> t = cm * m/100cm * width (m) * length (km) * 1000 m/km * bd (t/m3)
             !! apply to only one side (perim_bank / 2.)
@@ -128,11 +128,11 @@
           if (sd_ch(ich)%chs > 0.000001) then       ! sd_ch(ich)%chseq) then
             !! if bottom shear > d50 -> downcut - widen to maintain width depth ratio
             if (shear_btm > shear_btm_cr) then
-              e_btm = ts_hr *  sd_ch(ich)%cherod * (shear_btm - shear_btm_cr)    !! cm = hr * cm/hr/Pa * Pa
+              !e_btm = ts_hr *  sd_ch(ich)%cherod * (shear_btm - shear_btm_cr)    !! cm = hr * cm/hr/Pa * Pa
               !! if downcutting - check width depth ratio to see if widens
               !if (sd_ch(ich)%chw / sd_ch(ich)%chd < sd_ch(ich)%wd_rto) then
               !  erode_bank_cut = e_btm * sd_ch(ich)%wd_rto
-                !! appy to both bank sides
+                !! apply to both bank sides
               !  deg_bank = deg_bank + 10. * erode_bank_cut * perim_bank * sd_ch(ich)%chl * sd_ch(ich)%ch_bd
               !end if
               erode_btm = erode_btm + e_btm
@@ -165,7 +165,7 @@
       !! compute flood plain deposition
       bf_flow = sd_ch(ich)%bankfull_flo * ch_rcurv(ich)%elev(2)%flo_rate
       if (peakrate > bf_flow) then
-        dep = sd_ch(ich)%chseq * ht1%sed           !((peakrate - bf_flow) / peakrate) * ht1%sed
+        !dep = sd_ch(ich)%chseq * ht1%sed           !((peakrate - bf_flow) / peakrate) * ht1%sed
       end if
       
       !! output channel morphology
@@ -187,7 +187,7 @@
       chsd_d(ich)%hc_m = hc
       
       !! compute sediment leaving the channel - washload only - bottom deg is bedload
-	  sedout = ht1%sed - dep + hc_sed + erode_bank     !  + ebtm_t
+      sedout = ht1%sed - dep + hc_sed + erode_bank     !  + ebtm_t
       ht2%sed = sedout
       
 

@@ -10,9 +10,9 @@
       implicit none
       
       integer, intent (in) :: iaq        !             |
-      real :: const                      !             |constant used for rate, days, etc
-      integer :: iob                     !             |
-      integer :: ics
+      real :: const = 0.                 !             |constant used for rate, days, etc
+      integer :: iob = 0                 !             |
+      integer :: ics = 0
                          
 !!    ~ ~ ~ PURPOSE ~ ~ ~
 !!    this subroutine outputs constituent mass loadings and concentrations in aquifers
@@ -49,7 +49,7 @@
                          (acsb_d(iaq)%cs(ics)%srbd,ics=1,cs_db%num_cs)
         if (pco%csvout == "y") then
           write (6061,'(*(G0.3,:","))') time%day, time%mo, time%day_mo, time%yrc, iaq, ob(iob)%gis_id, & 
-																		   (acsb_d(iaq)%cs(ics)%csgw,ics=1,cs_db%num_cs), &
+                                                                           (acsb_d(iaq)%cs(ics)%csgw,ics=1,cs_db%num_cs), &
                                        (acsb_d(iaq)%cs(ics)%rchrg,ics=1,cs_db%num_cs), &
                                        (acsb_d(iaq)%cs(ics)%seep,ics=1,cs_db%num_cs), &
                                        (acsb_d(iaq)%cs(ics)%irr,ics=1,cs_db%num_cs), &

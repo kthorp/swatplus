@@ -8,7 +8,7 @@
 !!    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 !!    bio_p1(:)   |none           |1st shape parameter for plant P uptake
 !!                                |equation
-!!    bio_p2(:)   |none           |2st shape parameter for plant P uptake
+!!    bio_p2(:)   |none           |2nd shape parameter for plant P uptake
 !!                                |equation
 !!    ihru        |none           |HRU number
 !!                                |fraction of P in crop biomass at maturity
@@ -39,9 +39,9 @@
 
       implicit none
 
-      integer :: idp
-      integer :: j           !none      |hru number
-      real :: matur_frac     !frac      |fraction to maturity - use hu for annuals and years to maturity for perennials
+      integer :: idp = 0
+      integer :: j = 0       !none      |hru number
+      real :: matur_frac = 0.  !frac      |fraction to maturity - use hu for annuals and years to maturity for perennials
 
       j = ihru
 
